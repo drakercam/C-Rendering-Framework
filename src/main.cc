@@ -1,0 +1,116 @@
+#include <iostream>
+#include "framework.h"
+
+int main(void)
+{
+    Framework_InitWindow(1280, 720, 60.0f, "framework");
+
+    // Create shader
+    Shader shader;
+    Shader_Init(shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
+
+    // Create a triangle
+    Mesh triangle;
+    Mesh_LoadTriangle(triangle);
+    Mesh_Generate(triangle);
+
+    // Create a rectangle
+    Mesh rectangle;
+    Mesh_LoadRectangle(rectangle);
+    Mesh_Generate(rectangle);
+
+    // Create a circle
+    Mesh circle;
+    Mesh_LoadCircle(circle, 1.0f, 48);
+    Mesh_Generate(circle);
+
+    // Create a cube
+    Mesh cube;
+    Mesh_LoadCube(cube);
+    Mesh_Generate(cube);
+
+    // Create a sphere
+    Mesh sphere;
+    Mesh_LoadSphere(sphere, 1.0f, 24, 48);
+    Mesh_Generate(sphere);
+
+    // Load a model from the assets folder
+    Mesh car;
+    Mesh_LoadModel(car, "assets/covered_car_4k.obj");
+    Mesh_Generate(car);
+
+    // Load another model from the assets folder
+    Mesh boom_box;
+    Mesh_LoadModel(boom_box, "assets/boombox_4k.obj");
+    Mesh_Generate(boom_box);
+
+    
+    Transform rectangle_transform = { {-5.0f, 0.0f, 0.0f}, {0, 45.0f, 0}, {1.0f, 1.0f, 1.0f} };
+    Transform triangle_transform = { {5.0f, 0.0f, 0.0f}, {0, 30.0f, 0}, {1.0f, 1.0f, 1.0f} };
+    Transform circle_transform = { {2.0f, 0.0f, 7.0f}, {0, 50.0f, 50.0f}, {1.0f, 1.0f, 1.0f} };
+    Transform cube_transform = { {0.0f, 0.0f, -10.0f}, {25.0f, 25.0f, 25.0f}, {1.0f, 1.0f, 1.0f} };
+    Transform sphere_transform = { {0.0f, 0.0f, 10.0f}, {0, 0, 0}, {1.0f, 1.0f, 1.0f} };
+    Transform car_transform = { {-20.0f, 0.0f, 10.0f}, {0, 0, 0}, {1.0f, 1.0f, 1.0f} };
+    Transform boombox_transform = { {20.0f, 0.0f, 10.0f}, {0, 0, 0}, {5.0f, 5.0f, 5.0f} };
+
+    Camera3D camera;
+    Camera3D_Init(camera, 5.0f, 90.0f, {0.0f, 0.0f, 0.0f});
+
+    Texture georgia_texture;
+    Texture_Init(georgia_texture, "assets/textures/IMG_5191.JPG");
+
+    while (Framework_WindowShouldClose())
+    {
+        Framework_BeginFrame(camera, Colour::Blue);
+
+            // Dynamically alter the rotation transforms if needed
+            rectangle_transform.rotation.y += 50.0f * Time_Delta();
+
+            triangle_transform.rotation.y += 50.0f * Time_Delta();
+
+            circle_transform.rotation.y += 50.0f * Time_Delta();
+            circle_transform.rotation.z += 50.0f * Time_Delta();
+
+            cube_transform.rotation.x += 50.0f * Time_Delta();
+            cube_transform.rotation.y += 50.0f * Time_Delta();
+            cube_transform.rotation.z += 50.0f * Time_Delta();
+
+            // Draw the rectangle
+            Framework_DrawMesh(rectangle, rectangle_transform, camera, nullptr, nullptr, Colour::HotPink, true, true, true);
+
+            // Draw the triangle
+            Framework_DrawMesh(triangle, triangle_transform, camera, nullptr, &georgia_texture);
+
+            // Draw the circle
+            Framework_DrawMesh(circle, circle_transform, camera, nullptr, &georgia_texture);
+
+            // Draw the cube
+            Framework_DrawMesh(cube, cube_transform, camera, nullptr, &georgia_texture);
+
+            // Draw the sphere
+            Framework_DrawMesh(sphere, sphere_transform, camera, nullptr, nullptr, Colour::Coral);
+
+            // Draw the car
+            Framework_DrawMesh(car, car_transform, camera, nullptr, nullptr, Colour::White, true, true, true);
+
+            // Draw the boom box
+            Framework_DrawMesh(boom_box, boombox_transform, camera, nullptr, nullptr);
+
+        Framework_EndFrame();
+    }
+
+    // Will have to manually delete meshes and shaders here
+    Shader_Delete(shader);
+
+    Mesh_Delete(triangle);
+    Mesh_Delete(rectangle);
+    Mesh_Delete(circle);
+    Mesh_Delete(cube);
+    Mesh_Delete(sphere);
+    Mesh_Delete(car);
+    Mesh_Delete(boom_box);
+
+    Framework_CloseWindow();
+
+    return 0;
+}

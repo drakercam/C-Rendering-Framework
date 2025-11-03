@@ -1,0 +1,45 @@
+// 2D Camera Example for my framework
+
+#include <iostream>
+#include "framework.h"
+
+int main(void)
+{
+    Framework_InitWindow(1280, 720, 60.0f, "framework");
+
+    // Create shader
+    Shader shader;
+    Shader_Init(shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
+
+    Mesh triangle;
+    Mesh_LoadTriangle(triangle);
+    Mesh_Generate(triangle);
+
+    Transform triangle_transform = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.5f, 0.5f, 0.5f} };
+
+    Camera2D camera;
+    Camera2D_Init(camera, 1.0f, {0.0f, 0.0f}, 1.0f, 0.0f);
+
+    Texture georgia_texture;
+    Texture_Init(georgia_texture, "assets/textures/IMG_5191.JPG");
+
+    while (Framework_WindowShouldClose())
+    {
+        Framework_BeginFrame(camera, Colour::Blue);
+
+        // Draw the triangle
+        //triangle_transform.rotation.z += Time_Delta();
+
+        Framework_DrawMesh(triangle, triangle_transform, camera, nullptr, &georgia_texture, Colour::Red);
+
+        Framework_EndFrame();
+    }
+
+    // Will have to manually delete meshes and shaders here
+    Mesh_Delete(triangle);
+    Shader_Delete(shader);
+
+    Framework_CloseWindow();
+
+    return 0;
+}
