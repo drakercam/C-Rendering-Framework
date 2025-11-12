@@ -1,100 +1,97 @@
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include "master.h"
 
 int main(void)
 {
-    Window window = Window_Init(1280, 720, 60.0f, "c framework");
-    if (!Window_Generate(window))
-    {
-        Window_Delete();
-        return -1;
-    }
+    Window window;
+    if (!Window_Create(&window, 1280, 720, 60.0f, "C_Framework")) return -1;
 
     // Enable depth testing
-    Window_EnableDepthTesting();
+    Window_EnableDepthTest();
 
-    // Create shader
-    Shader shader;
-    Shader_Init(shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
+    // Create lighting shader
+    Shader light_shader;
+    Shader_Create(&light_shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
+
+    // Create texture shader
+    Shader tex_shader;
+    Shader_Create(&tex_shader, "shaders/texture_vertex.glsl", "shaders/texture_fragment.glsl");
 
     // Create a triangle
     Mesh triangle;
-    Mesh_LoadTriangle(triangle);
-    Mesh_Generate(triangle);
+    Mesh_CreateTriangle(&triangle);
+    Mesh_Upload(&triangle);
 
-    // Create a rectangle
-    Mesh rectangle;
-    Mesh_LoadRectangle(rectangle);
-    Mesh_Generate(rectangle);
+    // Create the sphere
+    Mesh dome;
+    Mesh_CreateDome(&dome, 1.0f, 24, 48);
+    Mesh_Upload(&dome);
+
+    // Create the cube
+    Mesh cube;
+    Mesh_CreateCube(&cube);
+    Mesh_Upload(&cube);
 
     // Create a circle
     Mesh circle;
-    Mesh_LoadCircle(circle, 1.0f, 48);
-    Mesh_Generate(circle);
+    Mesh_CreateCircle(&circle, 1.0f, 24);
+    Mesh_Upload(&circle);
 
-    // Create a cube
-    Mesh cube;
-    Mesh_LoadCube(cube);
-    Mesh_Generate(cube);
+    // Create a rectangle
+    Mesh rectangle;
+    Mesh_CreateRectangle(&rectangle);
+    Mesh_Upload(&rectangle);
 
-    // Create a sphere
-    Mesh sphere;
-    Mesh_LoadSphere(sphere, 1.0f, 24, 48);
-    Mesh_Generate(sphere);
-
-    // Load a model from the assets folder
-    Mesh car;
-    Mesh_LoadModel(car, "assets/covered_car_4k.obj");
-    Mesh_Generate(car);
-
-    // Load another model from the assets folder
-    Mesh boom_box;
-    Mesh_LoadModel(boom_box, "assets/boombox_4k.obj");
-    Mesh_Generate(boom_box);
+    // Create a boombox (model)
+    Mesh boombox;
+    Mesh_CreateModel(&boombox, "assets/boombox_4k.obj");
+    Mesh_Upload(&boombox);
 
     // Create the camera
     Camera3D camera;
-    Camera3D_Init(camera, 5.0f, 90.0f, {0.0f, 0.0f, 0.0f});
+    Camera3D_Create(&camera, 5.0f, 90.0f, (Vector3){0.0f, 0.0f, 0.0f});
 
     // Create a texture to bind to the rectangle
     Texture georgia_texture;
-    Texture_Init(georgia_texture, "assets/textures/IMG_5191.JPG");
+    Texture_Create(&georgia_texture, "assets/textures/IMG_5191.JPG", true);
 
-    Vector3 light_pos_world = {1.0f, 3.0f, 2.0f};
+    // Create a texture to bind to the sphere
+    Texture ocean;
+    Texture_Create(&ocean, "assets/textures/star_night_sky.jpg", false);
+
+    Vector3 light_pos_world = {50.0f, 100.0f, 25.0f};
     Vector3 light_color = {1.0f, 0.95f, 0.8f};
 
     // Render loop
     while (Window_IsOpen(window))
     {
         Time_Update();
+        Window_PrintFPS();
 
         // Update the camera
-        Camera3D_Update(window, camera, Time_Delta());
+        Camera3D_Update(&window, &camera, Time_Delta());
 
-        Window_Clear(Colour::White);
+        Window_Clear(Colour_White);
 
-        // Drawing the rectangle
+        // Draw the Dome which will represent the world itself
         Transform_PushMatrix();
 
-            // Perform transformations here
-            Transform_Translate({-5.0f,0.0f,0.0f});
-            Transform_Rotate(Math_DegToRad(45.0f)*Time_Total(), {0,1,0});
+            Transform_Translate(camera.position);
+            Transform_Scale((Vector3){100.0f, 100.0f, 100.0f});
 
-            Shader_Enable(shader);
-            Texture_Enable(georgia_texture, 0);
+            Shader_Enable(&tex_shader);
+            Texture_Enable(&ocean, 0);
 
             // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniformMat4(&tex_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&tex_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&tex_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-            Shader_SetUniform1i(shader, "uUseTexture", 1);
-            Shader_SetUniform1i(shader, "uTexture", 0);
-            Shader_SetUniform4f(shader, "uColor", Colour::White);
-            Mesh_Draw(rectangle);
+            Shader_SetUniform1i(&tex_shader, "uUseTexture", 1);
+            Shader_SetUniform1i(&tex_shader, "uTexture", 0);
+            
+            Mesh_Draw(&dome);
 
             Texture_Disable();
             Shader_Disable();
@@ -104,51 +101,24 @@ int main(void)
         // Drawing the triangle
         Transform_PushMatrix();
 
-            Transform_Translate({5.0f,0.0f,0.0f});
-            Transform_Rotate(Math_DegToRad(30.0f)*Time_Total(), {1,1,0});
+            Transform_Translate((Vector3){0.0f,0.0f,-5.0f});
+            Transform_Rotate(Math_DegToRad(30.0f)*Time_Total()*100.0f, (Vector3){1,1,0});
 
-            Shader_Enable(shader);
-            Texture_Enable(georgia_texture, 0);
-
-            // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
-
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-            Shader_SetUniform1i(shader, "uUseTexture", 1);
-            Shader_SetUniform1i(shader, "uTexture", 0);
-            Shader_SetUniform4f(shader, "uColor", Colour::White);
-            Mesh_Draw(triangle);
-
-            Texture_Disable();
-            Shader_Disable();
-
-        Transform_PopMatrix();
-
-        // Drawing the circle
-        Transform_PushMatrix();
-
-            Transform_Translate({2.0f,0.0f,7.0f});
-            Transform_Rotate(Math_DegToRad(50.0f)*Time_Total(), {0,1,1});
-
-            Shader_Enable(shader);
-            Texture_Enable(georgia_texture, 0);
+            Shader_Enable(&light_shader);
+            Texture_Enable(&georgia_texture, 0);
 
             // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniformMat4(&light_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&light_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&light_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-            Shader_SetUniform1i(shader, "uUseTexture", 1);
-            Shader_SetUniform1i(shader, "uTexture", 0);
-            Shader_SetUniform4f(shader, "uColor", Colour::White);
-            Mesh_Draw(circle);
+            Shader_SetUniform3f(&light_shader, "lightPos", light_pos_world);
+            Shader_SetUniform3f(&light_shader, "lightColor", light_color);
+            Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
+            Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
+            Shader_SetUniform1i(&light_shader, "uTexture", 0);
+            Shader_SetUniform4f(&light_shader, "uColor", Colour_White);
+            Mesh_Draw(&triangle);
 
             Texture_Disable();
             Shader_Disable();
@@ -158,87 +128,78 @@ int main(void)
         // Drawing the cube
         Transform_PushMatrix();
 
-            Transform_Translate({0.0f,0.0f,-10.0f});
-            Transform_Rotate(Math_DegToRad(25.0f)*Time_Total(), {1,1,1});
+            Transform_Translate((Vector3){-10.0f,0.0f,0.0f});
+            Transform_Rotate(Math_DegToRad(24.0f)*Time_Total()*100.0f, (Vector3){1,1,1});
 
-            Shader_Enable(shader);
-            Texture_Enable(georgia_texture, 0);
+            Shader_Enable(&light_shader);
+            Texture_Enable(&georgia_texture, 0);
 
             // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniformMat4(&light_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&light_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&light_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-            Shader_SetUniform1i(shader, "uUseTexture", 1);
-            Shader_SetUniform1i(shader, "uTexture", 0);
-            Shader_SetUniform4f(shader, "uColor", Colour::White);
-            Mesh_Draw(cube);
+            Shader_SetUniform3f(&light_shader, "lightPos", light_pos_world);
+            Shader_SetUniform3f(&light_shader, "lightColor", light_color);
+            Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
+            Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
+            Shader_SetUniform1i(&light_shader, "uTexture", 0);
+            Shader_SetUniform4f(&light_shader, "uColor", Colour_White);
+            Mesh_Draw(&cube);
 
             Texture_Disable();
             Shader_Disable();
 
         Transform_PopMatrix();
 
-        // Drawing the sphere
+        // Drawing the rectangle
         Transform_PushMatrix();
 
-            Transform_Translate({0.0f,0.0f,10.0f});
+            Transform_Translate((Vector3){10.0f,0.0f,0.0f});
+            Transform_Rotate(Math_DegToRad(24.0f)*Time_Total()*100.0f, (Vector3){1,1,1});
 
-            Shader_Enable(shader);
-            Texture_Enable(georgia_texture, 0);
+            Shader_Enable(&light_shader);
+            Texture_Enable(&georgia_texture, 0);
 
             // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniformMat4(&light_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&light_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&light_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-            Shader_SetUniform1i(shader, "uUseTexture", 1);
-            Shader_SetUniform1i(shader, "uTexture", 0);
-            Shader_SetUniform4f(shader, "uColor", Colour::White);
-            Mesh_Draw(sphere);
+            Shader_SetUniform3f(&light_shader, "lightPos", light_pos_world);
+            Shader_SetUniform3f(&light_shader, "lightColor", light_color);
+            Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
+            Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
+            Shader_SetUniform1i(&light_shader, "uTexture", 0);
+            Shader_SetUniform4f(&light_shader, "uColor", Colour_White);
+            Mesh_Draw(&rectangle);
 
             Texture_Disable();
             Shader_Disable();
 
         Transform_PopMatrix();
 
-        // Draw the car
+        // Drawing the circle
         Transform_PushMatrix();
 
-            // Perform transformations
-            Transform_Translate({-20.0f, 0.0f, 10.0f});
+            Transform_Translate((Vector3){0.0f,0.0f,-20.0f});
+            Transform_Rotate(Math_DegToRad(24.0f)*Time_Total()*100.0f, (Vector3){1,1,1});
 
-            Shader_Enable(shader);
+            Shader_Enable(&light_shader);
+            Texture_Enable(&georgia_texture, 0);
 
             // model, view, projection
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniformMat4(&light_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&light_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&light_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-
-            if (!car.textures.empty())
-            {   
-                Shader_SetUniform1i(shader, "uUseTexture", 1);
-                Shader_SetUniform1i(shader, "uTexture", 0);
-
-                Texture_Enable(car.textures[0], 0);
-            }
-            else
-            {
-                Shader_SetUniform1i(shader, "uUseTexture", 0);
-                Shader_SetUniform4f(shader, "uColor", Colour::Chocolate);
-            }
-
-            Mesh_Draw(car);
+            Shader_SetUniform3f(&light_shader, "lightPos", light_pos_world);
+            Shader_SetUniform3f(&light_shader, "lightColor", light_color);
+            Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
+            Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
+            Shader_SetUniform1i(&light_shader, "uTexture", 0);
+            Shader_SetUniform4f(&light_shader, "uColor", Colour_White);
+            Mesh_Draw(&circle);
 
             Texture_Disable();
             Shader_Disable();
@@ -249,35 +210,34 @@ int main(void)
         Transform_PushMatrix();
 
             // Perform transformations
-            Transform_Translate({20.0f, 0.0f, 10.0f});
-            Transform_Scale({5.0f,5.0f,5.0f});
+            Transform_Translate((Vector3){20.0f, 0.0f, 10.0f});
+            Transform_Scale((Vector3){5.0f,5.0f,5.0f});
 
-            Shader_Enable(shader);
+            Shader_Enable(&light_shader);
 
             // model, view, projection
+            Shader_SetUniformMat4(&light_shader, "uModel",      Transform_ModelMatrix());
+            Shader_SetUniformMat4(&light_shader, "uView",       Camera3D_ViewMatrix(&camera));
+            Shader_SetUniformMat4(&light_shader, "uProjection", Math_GetProjMatrix(window.fov, window.aspect, 0.1f, 100.0f));
 
-            Shader_SetUniformMat4(shader, "uModel",      Transform_ModelMatrix());
-            Shader_SetUniformMat4(shader, "uView",       Camera3D_ViewMatrix(camera));
-            Shader_SetUniformMat4(shader, "uProjection", Math_ProjectionMatrix(window.fov, window.aspect, 0.1f, 100.0f));
+            Shader_SetUniform3f(&light_shader, "lightPos", light_pos_world);
+            Shader_SetUniform3f(&light_shader, "lightColor", light_color);
+            Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
 
-            Shader_SetUniform3f(shader, "lightPos", light_pos_world);
-            Shader_SetUniform3f(shader, "lightColor", light_color);
-            Shader_SetUniform3f(shader, "viewPos", camera.position);
-
-            if (!boom_box.textures.empty())
+            if (boombox.textures.data)
             {  
-                Shader_SetUniform1i(shader, "uUseTexture", 1);
-                Shader_SetUniform1i(shader, "uTexture", 0);
+                Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
+                Shader_SetUniform1i(&light_shader, "uTexture", 0);
 
-                Texture_Enable(boom_box.textures[0], 0);
+                Texture_Enable(&DynArray_Get_T(Texture, &boombox.textures, 0), 0);
             }
             else
             {
-                Shader_SetUniform1i(shader, "uUseTexture", 0);
-                Shader_SetUniform4f(shader, "uColor", Colour::Brick);
+                Shader_SetUniform1i(&light_shader, "uUseTexture", 0);
+                Shader_SetUniform4f(&light_shader, "uColor", Colour_Brick);
             }
 
-            Mesh_Draw(boom_box);
+            Mesh_Draw(&boombox);
 
             Texture_Disable();
             Shader_Disable();
@@ -289,17 +249,18 @@ int main(void)
     }
 
     // Here we delete any meshes, shaders, textures, and the window
-    Shader_Delete(shader);
+    Shader_Delete(&light_shader);
+    Shader_Delete(&tex_shader);
 
-    Mesh_Delete(triangle);
-    Mesh_Delete(rectangle);
-    Mesh_Delete(cube);
-    Mesh_Delete(sphere);
-    Mesh_Delete(circle);
-    Mesh_Delete(car);
-    Mesh_Delete(boom_box);
+    Mesh_Delete(&cube);
+    Mesh_Delete(&triangle);
+    Mesh_Delete(&dome);
+    Mesh_Delete(&circle);
+    Mesh_Delete(&rectangle);
+    Mesh_Delete(&boombox);
 
-    Texture_Delete(georgia_texture);
+    Texture_Delete(&georgia_texture);
+    Texture_Delete(&ocean);
 
     Window_Delete();
 

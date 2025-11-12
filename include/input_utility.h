@@ -4,9 +4,9 @@
 #include <GLFW/glfw3.h>
 #include "window_utility.h"
 
-static inline bool IsKeyPressed(const Window& window, int key)
+static inline bool IsKeyPressed(const Window* window, int key)
 {
-    return glfwGetKey(window.w, key) == GLFW_PRESS;
+    return glfwGetKey(window->w, key) == GLFW_PRESS;
 }
 
 #endif

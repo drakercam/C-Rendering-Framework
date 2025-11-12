@@ -1,9 +1,9 @@
-#ifndef ARRAY_UTILITY_H
-#define ARRAY_UTILITY_H
+#ifndef DYN_ARRAY_UTILITY_H
+#define DYN_ARRAY_UTILITY_H
 
 #include <stdlib.h>
-#include <cstring>
 #include <stdio.h>
+#include <memory.h>
 #include <stddef.h>
 #include "arena_utility.h"
 
@@ -13,13 +13,13 @@ typedef struct
     size_t element_size;
     size_t length;
     size_t capacity;
-    arena* allocator;   // if NULL, use malloc/free
+    Arena* allocator;   // if NULL, use malloc/free
 
-} array;
+} DynArray;
 
-static inline array array_create(size_t element_size, size_t capacity, arena* allocator)
+static inline DynArray DynArray_Create(size_t element_size, size_t capacity, Arena* allocator)
 {
-    array a;
+    DynArray a;
     a.element_size = element_size;
     a.length = 0;
     a.capacity = capacity;
@@ -27,7 +27,7 @@ static inline array array_create(size_t element_size, size_t capacity, arena* al
 
     if (allocator)
     {
-        a.data = arena_alloc(allocator, a.element_size * a.capacity);
+        a.data = Arena_Alloc(allocator, a.element_size * a.capacity);
     }
     else
     {
@@ -37,15 +37,15 @@ static inline array array_create(size_t element_size, size_t capacity, arena* al
     if (!a.data)
     {
         fprintf(stderr, "Failed to allocate memory for vector\n");
-        return (array){0};
+        return (DynArray){0};
     }
 
     return a;
 }
 
-#define array_create_T(T, capacity, allocator) array_create(sizeof(T), capacity, allocator);
+#define DynArray_Create_T(T, capacity, allocator) DynArray_Create(sizeof(T), capacity, allocator)
 
-static inline void array_free(array* a)
+static inline void DynArray_Free(DynArray* a)
 {
     if (!a) return;
     if (!a->allocator && a->data) free(a->data);
@@ -55,12 +55,12 @@ static inline void array_free(array* a)
     a->length = 0;
 }
 
-static inline size_t array_size(const array* a)
+static inline size_t DynArray_Size(const DynArray* a)
 {
     return a ? a->length : 0;
 }
 
-static inline void array_pushback(array* a, void* data)
+static inline void DynArray_Push(DynArray* a, void* data)
 {
     if (!a || !data)
     {
@@ -92,9 +92,9 @@ static inline void array_pushback(array* a, void* data)
     a->length += 1;
 }
 
-#define array_push_T(T, array, val) do { T tmp = (val); array_pushback((array), &tmp); } while(0)
+#define DynArray_Push_T(T, array, val) do { T tmp = (val); DynArray_Push((array), &tmp); } while(0)
 
-static inline void array_popback(array* a, void* out)
+static inline void DynArray_Pop(DynArray* a, void* out)
 {
     if (!a || a->length == 0)
     {
@@ -109,11 +109,11 @@ static inline void array_popback(array* a, void* out)
     }
 }
 
-#define array_pop_T(T, array, out) do { (array_popback(array, (void*)&out)); } while(0)
+#define DynArray_Pop_T(T, array, out_ptr) do { (DynArray_Pop(array, (void*)(out_ptr))); } while(0)
 
-static inline void* array_get(const array* a, size_t index)
+static inline void* DynArray_Get(const DynArray* a, size_t index)
 {
-    if (!a || a->length == 0 || index >= a->length)
+    if (!a || index >= a->length)
     {
         fprintf(stderr, "Unable to retrieve value at index %zu\n", index);
         return NULL;
@@ -123,19 +123,19 @@ static inline void* array_get(const array* a, size_t index)
     return target;
 }
 
-#define array_get_T(T, array, index) (*(T*)array_get((array), (index)))
+#define DynArray_Get_T(T, array, index) (*(T*)DynArray_Get((array), (index)))
 
-#define array_set_T(T, array, index, val) ((*(T*)array_get((array), (index))) = (val))
+#define DynArray_Set_T(T, array, index, val) ((*(T*)DynArray_Get((array), (index))) = (val))
 
-static inline array array_copy(const array* src, arena* allocator)
+static inline DynArray DynArray_Copy(const DynArray* src, Arena* allocator)
 {
     if (!src)
     {
         fprintf(stderr, "Source vector is NULL\n");
-        return (array){0};
+        return (DynArray){0};
     }
 
-    array copy = {0};
+    DynArray copy = {0};
     copy.element_size = src->element_size;
     copy.length = src->length;
     copy.capacity = src->capacity;
@@ -143,7 +143,7 @@ static inline array array_copy(const array* src, arena* allocator)
 
     if (allocator)
     {
-        arena_alloc(allocator, copy.capacity * copy.element_size);
+        copy.data = Arena_Alloc(allocator, copy.capacity * copy.element_size);
     }
     else
     {
@@ -153,7 +153,7 @@ static inline array array_copy(const array* src, arena* allocator)
     if (!copy.data)
     {
         fprintf(stderr, "Failed to allocated memory for copy of vector\n");
-        return (array){0};
+        return (DynArray){0};
     }
 
     memcpy(copy.data, src->data, src->length * src->element_size);

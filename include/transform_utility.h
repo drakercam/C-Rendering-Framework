@@ -2,8 +2,7 @@
 #define TRANSFORM_UTILITY_H
 
 #include "math_utility.h"
-#include <stack>
-#include <iostream>
+#include "stack_utility.h"
 
 typedef struct
 {
@@ -13,64 +12,60 @@ typedef struct
 
 } Transform;
 
-// to hide the details of the matrix stack
-// mimics openframeworks
-namespace transform_detail
-{
-    inline std::stack<Matrix4> stack;
-    inline Matrix4 current_mat4 = Math_Mat4Identity();
-}
+STACK_DEFINE(Matrix4, MatrixStack, 256);
+
+static MatrixStack stack;
+static Matrix4 current_mat4 = Math_Mat4Identity();
 
 static inline void Transform_PushMatrix()
 {
-    transform_detail::stack.push(transform_detail::current_mat4);
+    MatrixStack_Push(&stack, current_mat4);
 }
 
 static inline void Transform_PopMatrix()
 {
-    if (!transform_detail::stack.empty())
+    if (!MatrixStack_IsEmpty(&stack))
     {
-        transform_detail::current_mat4 = transform_detail::stack.top();
-        transform_detail::stack.pop();
+        current_mat4 = MatrixStack_Pop(&stack);
     }
     else
     {
-        std::cerr << "Pop called on empty matrix stack!" << std::endl;
+        printf("Pop called on empty matrix stack!\n");
     }
 }
 
-static inline void Transform_Translate(const Vector3& t)
+static inline void Transform_Translate(Vector3 t)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4Translate(t));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4Translate(t));
 }
 
-static inline void Transform_Rotate(float thetaRads, const Vector3& axis)
+static inline void Transform_Rotate(float thetaRads, Vector3 axis)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4Rotate(Math_DegToRad(thetaRads), axis));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4Rotate(Math_DegToRad(thetaRads), axis));
 }
 
 static inline void Transform_RotateX(float thetaRads)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4RotateX(Math_DegToRad(thetaRads)));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4RotateX(Math_DegToRad(thetaRads)));
 }
 
 static inline void Transform_RotateY(float thetaRads)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4RotateY(Math_DegToRad(thetaRads)));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4RotateY(Math_DegToRad(thetaRads)));
 }
 
 static inline void Transform_RotateZ(float thetaRads)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4RotateZ(Math_DegToRad(thetaRads)));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4RotateZ(Math_DegToRad(thetaRads)));
 }
 
-static inline void Transform_Scale(const Vector3& s)
+static inline void Transform_Scale(Vector3 s)
 {
-    transform_detail::current_mat4 = Math_Mat4Multiply(transform_detail::current_mat4, Math_Mat4Scale(s));
+    current_mat4 = Math_Mat4Multiply(current_mat4, Math_Mat4Scale(s));
 }
 
-static inline const Matrix4& Transform_ModelMatrix() { return transform_detail::current_mat4; }
+static inline Matrix4 Transform_ModelMatrix() { return current_mat4; }
 
-static inline void Transform_LoadIdentity() { transform_detail::current_mat4 = Math_Mat4Identity(); }
+static inline void Transform_LoadIdentity() { current_mat4 = Math_Mat4Identity(); }
 
 #endif

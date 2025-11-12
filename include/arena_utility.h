@@ -11,16 +11,17 @@ typedef struct
     void* start;
     void* current;
     void* end;
-} arena;
+    
+} Arena;
 
 #define ALIGN(val, al) (((val) + (al) - 1) / (al)) * (al)
 static inline size_t alignment = alignof(max_align_t);
 
-static inline arena arena_create(size_t capacity)
+static inline Arena Arena_Create(size_t capacity)
 {   
     void* initial = malloc(capacity);
 
-    arena a;
+    Arena a;
     a.start = initial;
     a.current = initial;
     a.end = (char*)initial + capacity;  // ✅ cast to char* for pointer arithmetic
@@ -28,12 +29,12 @@ static inline arena arena_create(size_t capacity)
     return a;
 }
 
-static inline void arena_reset(arena* a)
+static inline void Arena_Reset(Arena* a)
 {
     a->current = a->start;
 }
 
-static inline void* arena_alloc(arena* a, size_t size)
+static inline void* Arena_Alloc(Arena* a, size_t size)
 {
     if (!a)
         return NULL;
@@ -48,7 +49,7 @@ static inline void* arena_alloc(arena* a, size_t size)
     return p;
 }
 
-static inline void arena_free(arena* a)
+static inline void Arena_Free(Arena* a)
 {
     free(a->start);
     a->start = NULL;

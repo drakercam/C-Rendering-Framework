@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Iinclude -std=c++17
+CFLAGS = -g -O0 -Wall -Iinclude
 LIBS = -lglfw -ldl -lGL -lm -lassimp
 SRC = src/main.cpp src/glad.c
 OUT = C_Framework
@@ -14,3 +14,17 @@ run:
 
 clean:
 	rm -f $(OUT)
+
+go:
+	make && make run
+
+reset:
+	make clean && make && make run
+
+memcheck:
+	valgrind --leak-check=full \
+         --show-leak-kinds=all \
+         --suppressions=gl.supp \
+         --suppressions=clean.supp \
+         ./$(OUT)
+

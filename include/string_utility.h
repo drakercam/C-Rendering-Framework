@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
+#include <string.h>
 #include "arena_utility.h"
 
 typedef struct
@@ -12,11 +12,11 @@ typedef struct
     char* data;
     size_t length;
     size_t capacity;
-    arena* allocator;   // IF NULL, use malloc/free
+    Arena* allocator;   // IF NULL, use malloc/free
 
-} string;
+} String;
 
-static inline void string_append(string* str, const char* suffix)
+static inline void String_Append(String* str, const char* suffix)
 {
     if (!str || suffix == NULL)
     {
@@ -59,9 +59,9 @@ static inline void string_append(string* str, const char* suffix)
     str->data[str->length] = '\0';
 }
 
-static inline string string_create(size_t capacity, const char* c_str, arena* allocator)
+static inline String String_Create(size_t capacity, const char* c_str, Arena* allocator)
 {
-    string str;
+    String str;
 
     if (capacity == 0)
         capacity = 1;
@@ -71,7 +71,7 @@ static inline string string_create(size_t capacity, const char* c_str, arena* al
 
     if (allocator)
     {
-        str.data = static_cast<char*>(arena_alloc(allocator, capacity));
+        str.data = static_cast<char*>(Arena_Alloc(allocator, capacity));
     }
     else
     {
@@ -81,15 +81,18 @@ static inline string string_create(size_t capacity, const char* c_str, arena* al
     if (!str.data)
     {
         fprintf(stderr, "Memory allocation failed for string\n");
-        return (string){0};
+        return (String){0};
     }
 
-    string_append(&str, c_str);
+    if (c_str)
+    {
+        String_Append(&str, c_str);
+    }
 
     return str;
 }
 
-static inline void string_free(string* str)
+static inline void String_Free(String* str)
 {
     if (!str) 
         return;
@@ -101,12 +104,12 @@ static inline void string_free(string* str)
     str->capacity = 0;
 }
 
-static inline size_t string_length(const string* str)
+static inline size_t String_Length(const String* str)
 {
     return str ? str->length : 0;
 }
 
-static inline void string_clear(string* str)
+static inline void String_Clear(String* str)
 {
     if (str && str->data)
     {
@@ -115,7 +118,7 @@ static inline void string_clear(string* str)
     }
 }
 
-static inline int string_compare(const string* a, const string* b)
+static inline int String_Compare(const String* a, const String* b)
 {
     if (!a || !b)
         return (a == b) ? 0 : (a ? 1 : -1);
@@ -123,28 +126,28 @@ static inline int string_compare(const string* a, const string* b)
     return strcmp(a->data, b->data);
 }
 
-static inline void string_print(const string* str)
+static inline void String_Print(const String* str)
 {
     if (str && str->data)
         fprintf(stdout, "%s\n", str->data);
 }
 
-static inline string string_copy(const string* src, arena* allocator)
+static inline String String_Copy(const String* src, Arena* allocator)
 {
     if (!src)
     {
         fprintf(stderr, "Source string is NULL\n");
-        return (string){0};
+        return (String){0};
     }
 
-    string copy = {0};
+    String copy = {0};
     copy.length = src->length;
     copy.capacity = src->length + 1;
     copy.allocator = allocator;
 
     if (allocator)
     {
-        copy.data = static_cast<char*>(arena_alloc(allocator, copy.capacity));
+        copy.data = static_cast<char*>(Arena_Alloc(allocator, copy.capacity));
     }
     else
     {
@@ -154,7 +157,7 @@ static inline string string_copy(const string* src, arena* allocator)
     if (!copy.data)
     {
         fprintf(stderr, "Failed to allocate memory for copy of string\n");
-        return (string){0};
+        return (String){0};
     }
 
     memcpy(copy.data, src->data, copy.length + 1);

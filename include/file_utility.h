@@ -1,26 +1,29 @@
 #ifndef FILE_UTILITY_H
 #define FILE_UTILITY_H
 
-#include <fstream>
-#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include "string_utility.h"
 
-static inline std::string LoadTextFile(const char* name)
+static inline String File_Load(const char* name)
 {
-    std::ifstream file;
-    file.open(name);
-    if (file.fail())
+    String contents = String_Create(4096, NULL, NULL);
+
+    FILE* file = fopen(name, "r");
+    if (!file)
     {
-        throw(std::ios_base::failure(std::string("Error opening file: ") + std::string(name))); 
+        printf("Failed to open file: %s\n", name);
+        return (String){0};
     }
 
-    std::string contents;
-    std::string cur_line;
-    while (std::getline(file, cur_line))
+    char line[512];
+
+    while (fgets(line, sizeof(line), file))
     {
-        contents += cur_line +"\n";
+        String_Append(&contents, line);
     }
 
-    file.close();
+    fclose(file);
 
     return contents;
 }

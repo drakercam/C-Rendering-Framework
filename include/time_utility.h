@@ -3,26 +3,20 @@
 
 #include <GLFW/glfw3.h>
 
-namespace time_detail
-{
-    inline float lastFrame = 0.0f;
-    inline float deltaTime = 0.0f;
-    inline float totalTime = 0.0f;
-}
+static float Time_LastFrame = 0.0f;
+static float Time_DeltaTime = 0.0f;
+static float Time_TotalTime = 0.0f;
 
 // update the time
 static inline void Time_Update()
 {
-    float now = static_cast<float>(glfwGetTime());
-    time_detail::deltaTime = now - time_detail::lastFrame;
-    time_detail::lastFrame = now;
-    time_detail::totalTime += time_detail::deltaTime;
+    float now = (float)glfwGetTime();
+    Time_DeltaTime = now - Time_LastFrame;
+    Time_LastFrame = now;
+    Time_TotalTime += Time_DeltaTime;
 }
 
-// get delta time
-static inline float Time_Delta() { return time_detail::deltaTime; }
-
-// get total time
-static inline float Time_Total() { return time_detail::totalTime; }
+static inline float Time_Delta(void) { return Time_DeltaTime; }
+static inline float Time_Total(void) { return Time_TotalTime; }
 
 #endif

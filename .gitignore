@@ -1,0 +1,22 @@
+# Ignore assets folder
+assets/
+
+# Ignore editor settings
+.vscode/
+
+# Ignore build artifacts
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+# Ignore compiled shader caches (if any)
+*.spv
+
+# Ignore temporary files
+*.supp
+*.tmp
+*.log

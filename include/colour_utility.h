@@ -5,81 +5,78 @@
 
 // COLOURS ARE JUST VECTOR4's
 
-namespace Colour
-{
-    static inline const Vector4 Custom(float r, float g, float b, float a) { return { r, g, b, a }; }
+#define Colour_Custom(r, g, b, a) ((Vector4){ r, g, b, a })
 
-    // Basic colours
-    static constexpr Vector4 White        = { 1.0f, 1.0f, 1.0f, 1.0f };
-    static constexpr Vector4 Black        = { 0.0f, 0.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Transparent  = { 0.0f, 0.0f, 0.0f, 0.0f };
+// Basic colours
+#define Colour_White        ((Vector4){ 1.0f, 1.0f, 1.0f, 1.0f })
+#define Colour_Black        ((Vector4){ 0.0f, 0.0f, 0.0f, 1.0f })
+#define Colour_Transparent  ((Vector4){ 0.0f, 0.0f, 0.0f, 0.0f })
 
-    // Grayscale
-    static constexpr Vector4 Gray         = { 0.5f, 0.5f, 0.5f, 1.0f };
-    static constexpr Vector4 LightGray    = { 0.75f, 0.75f, 0.75f, 1.0f };
-    static constexpr Vector4 DarkGray     = { 0.25f, 0.25f, 0.25f, 1.0f };
+// Grayscale
+#define Colour_Gray         ((Vector4){ 0.5f, 0.5f, 0.5f, 1.0f })
+#define Colour_LightGray    ((Vector4){ 0.75f, 0.75f, 0.75f, 1.0f })
+#define Colour_DarkGray     ((Vector4){ 0.25f, 0.25f, 0.25f, 1.0f })
 
-    // Primary & secondary
-    static constexpr Vector4 Red          = { 1.0f, 0.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Green        = { 0.0f, 1.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Blue         = { 0.0f, 0.0f, 1.0f, 1.0f };
-    static constexpr Vector4 Yellow       = { 1.0f, 1.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Magenta      = { 1.0f, 0.0f, 1.0f, 1.0f };
-    static constexpr Vector4 Cyan         = { 0.0f, 1.0f, 1.0f, 1.0f };
+// Primary & secondary
+#define Colour_Red          ((Vector4){ 1.0f, 0.0f, 0.0f, 1.0f })
+#define Colour_Green        ((Vector4){ 0.0f, 1.0f, 0.0f, 1.0f })
+#define Colour_Blue         ((Vector4){ 0.0f, 0.0f, 1.0f, 1.0f })
+#define Colour_Yellow       ((Vector4){ 1.0f, 1.0f, 0.0f, 1.0f })
+#define Colour_Magenta      ((Vector4){ 1.0f, 0.0f, 1.0f, 1.0f })
+#define Colour_Cyan         ((Vector4){ 0.0f, 1.0f, 1.0f, 1.0f })
 
-    // Extended palette
-    static constexpr Vector4 Orange       = { 1.0f, 0.5f, 0.0f, 1.0f };
-    static constexpr Vector4 Pink         = { 1.0f, 0.41f, 0.71f, 1.0f };
-    static constexpr Vector4 Purple       = { 0.5f, 0.0f, 0.5f, 1.0f };
-    static constexpr Vector4 Violet       = { 0.56f, 0.0f, 1.0f, 1.0f };
-    static constexpr Vector4 Indigo       = { 0.29f, 0.0f, 0.51f, 1.0f };
-    static constexpr Vector4 Lime         = { 0.75f, 1.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Olive        = { 0.5f, 0.5f, 0.0f, 1.0f };
-    static constexpr Vector4 Teal         = { 0.0f, 0.5f, 0.5f, 1.0f };
-    static constexpr Vector4 Aqua         = { 0.0f, 1.0f, 1.0f, 1.0f };
-    static constexpr Vector4 Navy         = { 0.0f, 0.0f, 0.5f, 1.0f };
-    static constexpr Vector4 Maroon       = { 0.5f, 0.0f, 0.0f, 1.0f };
-    static constexpr Vector4 Brown        = { 0.6f, 0.3f, 0.0f, 1.0f };
-    static constexpr Vector4 Tan          = { 0.82f, 0.71f, 0.55f, 1.0f };
-    static constexpr Vector4 Gold         = { 1.0f, 0.84f, 0.0f, 1.0f };
-    static constexpr Vector4 Silver       = { 0.75f, 0.75f, 0.75f, 1.0f };
-    static constexpr Vector4 Bronze       = { 0.8f, 0.5f, 0.2f, 1.0f };
+// Extended palette
+#define Colour_Orange       ((Vector4){ 1.0f, 0.5f, 0.0f, 1.0f })
+#define Colour_Pink         ((Vector4){ 1.0f, 0.41f, 0.71f, 1.0f })
+#define Colour_Purple       ((Vector4){ 0.5f, 0.0f, 0.5f, 1.0f })
+#define Colour_Violet       ((Vector4){ 0.56f, 0.0f, 1.0f, 1.0f })
+#define Colour_Indigo       ((Vector4){ 0.29f, 0.0f, 0.51f, 1.0f })
+#define Colour_Lime         ((Vector4){ 0.75f, 1.0f, 0.0f, 1.0f })
+#define Colour_Olive        ((Vector4){ 0.5f, 0.5f, 0.0f, 1.0f })
+#define Colour_Teal         ((Vector4){ 0.0f, 0.5f, 0.5f, 1.0f })
+#define Colour_Aqua         ((Vector4){ 0.0f, 1.0f, 1.0f, 1.0f })
+#define Colour_Navy         ((Vector4){ 0.0f, 0.0f, 0.5f, 1.0f })
+#define Colour_Maroon       ((Vector4){ 0.5f, 0.0f, 0.0f, 1.0f })
+#define Colour_Brown        ((Vector4){ 0.6f, 0.3f, 0.0f, 1.0f })
+#define Colour_Tan          ((Vector4){ 0.82f, 0.71f, 0.55f, 1.0f })
+#define Colour_Gold         ((Vector4){ 1.0f, 0.84f, 0.0f, 1.0f })
+#define Colour_Silver       ((Vector4){ 0.75f, 0.75f, 0.75f, 1.0f })
+#define Colour_Bronze       ((Vector4){ 0.8f, 0.5f, 0.2f, 1.0f })
 
-    // Nature-inspired
-    static constexpr Vector4 SkyBlue      = { 0.53f, 0.81f, 0.92f, 1.0f };
-    static constexpr Vector4 RoyalBlue    = { 0.25f, 0.41f, 0.88f, 1.0f };
-    static constexpr Vector4 ForestGreen  = { 0.13f, 0.55f, 0.13f, 1.0f };
-    static constexpr Vector4 SeaGreen     = { 0.18f, 0.55f, 0.34f, 1.0f };
-    static constexpr Vector4 DarkGreen    = { 0.0f, 0.39f, 0.0f, 1.0f };
-    static constexpr Vector4 LightGreen   = { 0.56f, 0.93f, 0.56f, 1.0f };
-    static constexpr Vector4 Coral        = { 1.0f, 0.5f, 0.31f, 1.0f };
-    static constexpr Vector4 Salmon       = { 0.98f, 0.5f, 0.45f, 1.0f };
-    static constexpr Vector4 DeepPink     = { 1.0f, 0.08f, 0.58f, 1.0f };
-    static constexpr Vector4 HotPink      = { 1.0f, 0.41f, 0.71f, 1.0f };
-    static constexpr Vector4 Crimson      = { 0.86f, 0.08f, 0.24f, 1.0f };
-    static constexpr Vector4 FireBrick    = { 0.7f, 0.13f, 0.13f, 1.0f };
-    static constexpr Vector4 Chocolate    = { 0.82f, 0.41f, 0.12f, 1.0f };
-    static constexpr Vector4 SandyBrown   = { 0.96f, 0.64f, 0.38f, 1.0f };
-    static constexpr Vector4 Beige        = { 0.96f, 0.96f, 0.86f, 1.0f };
-    static constexpr Vector4 Mint         = { 0.6f, 1.0f, 0.6f, 1.0f };
+// Nature-inspired
+#define Colour_SkyBlue      ((Vector4){ 0.53f, 0.81f, 0.92f, 1.0f })
+#define Colour_RoyalBlue    ((Vector4){ 0.25f, 0.41f, 0.88f, 1.0f })
+#define Colour_ForestGreen  ((Vector4){ 0.13f, 0.55f, 0.13f, 1.0f })
+#define Colour_SeaGreen     ((Vector4){ 0.18f, 0.55f, 0.34f, 1.0f })
+#define Colour_DarkGreen    ((Vector4){ 0.0f, 0.39f, 0.0f, 1.0f })
+#define Colour_LightGreen   ((Vector4){ 0.56f, 0.93f, 0.56f, 1.0f })
+#define Colour_Coral        ((Vector4){ 1.0f, 0.5f, 0.31f, 1.0f })
+#define Colour_Salmon       ((Vector4){ 0.98f, 0.5f, 0.45f, 1.0f })
+#define Colour_DeepPink     ((Vector4){ 1.0f, 0.08f, 0.58f, 1.0f })
+#define Colour_HotPink      ((Vector4){ 1.0f, 0.41f, 0.71f, 1.0f })
+#define Colour_Crimson      ((Vector4){ 0.86f, 0.08f, 0.24f, 1.0f })
+#define Colour_FireBrick    ((Vector4){ 0.7f, 0.13f, 0.13f, 1.0f })
+#define Colour_Chocolate    ((Vector4){ 0.82f, 0.41f, 0.12f, 1.0f })
+#define Colour_SandyBrown   ((Vector4){ 0.96f, 0.64f, 0.38f, 1.0f })
+#define Colour_Beige        ((Vector4){ 0.96f, 0.96f, 0.86f, 1.0f })
+#define Colour_Mint         ((Vector4){ 0.6f, 1.0f, 0.6f, 1.0f })
 
-    // Cool tones
-    static constexpr Vector4 MidnightBlue = { 0.1f, 0.1f, 0.44f, 1.0f };
-    static constexpr Vector4 SlateBlue    = { 0.42f, 0.35f, 0.8f, 1.0f };
-    static constexpr Vector4 Turquoise    = { 0.25f, 0.88f, 0.82f, 1.0f };
-    static constexpr Vector4 LightCyan    = { 0.88f, 1.0f, 1.0f, 1.0f };
-    static constexpr Vector4 PaleBlue     = { 0.69f, 0.93f, 0.93f, 1.0f };
-    static constexpr Vector4 SteelBlue    = { 0.27f, 0.51f, 0.71f, 1.0f };
+// Cool tones
+#define Colour_MidnightBlue ((Vector4){ 0.1f, 0.1f, 0.44f, 1.0f })
+#define Colour_SlateBlue    ((Vector4){ 0.42f, 0.35f, 0.8f, 1.0f })
+#define Colour_Turquoise    ((Vector4){ 0.25f, 0.88f, 0.82f, 1.0f })
+#define Colour_LightCyan    ((Vector4){ 0.88f, 1.0f, 1.0f, 1.0f })
+#define Colour_PaleBlue     ((Vector4){ 0.69f, 0.93f, 0.93f, 1.0f })
+#define Colour_SteelBlue    ((Vector4){ 0.27f, 0.51f, 0.71f, 1.0f })
 
-    // Warm tones
-    static constexpr Vector4 Peach        = { 1.0f, 0.89f, 0.71f, 1.0f };
-    static constexpr Vector4 Rose         = { 1.0f, 0.0f, 0.5f, 1.0f };
-    static constexpr Vector4 Plum         = { 0.87f, 0.63f, 0.87f, 1.0f };
-    static constexpr Vector4 Lavender     = { 0.9f, 0.9f, 0.98f, 1.0f };
-    static constexpr Vector4 Khaki        = { 0.76f, 0.69f, 0.57f, 1.0f };
-    static constexpr Vector4 Wheat        = { 0.96f, 0.87f, 0.7f, 1.0f };
-    static constexpr Vector4 Amber        = { 1.0f, 0.75f, 0.0f, 1.0f };
-    static constexpr Vector4 Brick        = { 0.8f, 0.25f, 0.33f, 1.0f };
-}
+// Warm tones
+#define Colour_Peach        ((Vector4){ 1.0f, 0.89f, 0.71f, 1.0f })
+#define Colour_Rose         ((Vector4){ 1.0f, 0.0f, 0.5f, 1.0f })
+#define Colour_Plum         ((Vector4){ 0.87f, 0.63f, 0.87f, 1.0f })
+#define Colour_Lavender     ((Vector4){ 0.9f, 0.9f, 0.98f, 1.0f })
+#define Colour_Khaki        ((Vector4){ 0.76f, 0.69f, 0.57f, 1.0f })
+#define Colour_Wheat        ((Vector4){ 0.96f, 0.87f, 0.7f, 1.0f })
+#define Colour_Amber        ((Vector4){ 1.0f, 0.75f, 0.0f, 1.0f })
+#define Colour_Brick        ((Vector4){ 0.8f, 0.25f, 0.33f, 1.0f })
 
 #endif

@@ -7,42 +7,42 @@ int main(void)
 
     // Create shader
     Shader shader;
-    Shader_Init(shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
+    Shader_Create(shader, "shaders/vertex.glsl", "shaders/fragment.glsl");
 
     // Create a triangle
     Mesh triangle;
-    Mesh_LoadTriangle(triangle);
-    Mesh_Generate(triangle);
+    Mesh_CreateTriangle(triangle);
+    Mesh_Upload(triangle);
 
     // Create a rectangle
     Mesh rectangle;
-    Mesh_LoadRectangle(rectangle);
-    Mesh_Generate(rectangle);
+    Mesh_CreateRectangle(rectangle);
+    Mesh_Upload(rectangle);
 
     // Create a circle
     Mesh circle;
-    Mesh_LoadCircle(circle, 1.0f, 48);
-    Mesh_Generate(circle);
+    Mesh_CreateCircle(circle, 1.0f, 48);
+    Mesh_Upload(circle);
 
     // Create a cube
     Mesh cube;
-    Mesh_LoadCube(cube);
-    Mesh_Generate(cube);
+    Mesh_CreateCube(cube);
+    Mesh_Upload(cube);
 
     // Create a sphere
     Mesh sphere;
-    Mesh_LoadSphere(sphere, 1.0f, 24, 48);
-    Mesh_Generate(sphere);
+    Mesh_CreateSphere(sphere, 1.0f, 24, 48);
+    Mesh_Upload(sphere);
 
     // Load a model from the assets folder
     Mesh car;
-    Mesh_LoadModel(car, "assets/covered_car_4k.obj");
-    Mesh_Generate(car);
+    Mesh_CreateModel(car, "assets/covered_car_4k.obj");
+    Mesh_Upload(car);
 
     // Load another model from the assets folder
     Mesh boom_box;
-    Mesh_LoadModel(boom_box, "assets/boombox_4k.obj");
-    Mesh_Generate(boom_box);
+    Mesh_CreateModel(boom_box, "assets/boombox_4k.obj");
+    Mesh_Upload(boom_box);
 
     
     Transform rectangle_transform = { {-5.0f, 0.0f, 0.0f}, {0, 45.0f, 0}, {1.0f, 1.0f, 1.0f} };
@@ -54,10 +54,10 @@ int main(void)
     Transform boombox_transform = { {20.0f, 0.0f, 10.0f}, {0, 0, 0}, {5.0f, 5.0f, 5.0f} };
 
     Camera3D camera;
-    Camera3D_Init(camera, 5.0f, 90.0f, {0.0f, 0.0f, 0.0f});
+    Camera3D_Create(camera, 5.0f, 90.0f, {0.0f, 0.0f, 0.0f});
 
     Texture georgia_texture;
-    Texture_Init(georgia_texture, "assets/textures/IMG_5191.JPG");
+    Texture_Create(georgia_texture, "assets/textures/IMG_5191.JPG", true);
 
     while (Framework_WindowShouldClose())
     {
