@@ -1,6 +1,11 @@
 #ifndef MESH_UTILITY_H
 #define MESH_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -9,12 +14,7 @@
 #include "dyn_array_utility.h"
 #include "string_utility.h"
 #include "arena_utility.h"
-
-// Use assimp for model loading
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <filesystem>
+#include <math.h>
 
 // For better readabilty and easier to reuse
 typedef struct
@@ -37,8 +37,8 @@ typedef struct
     //std::vector<unsigned int> indices;
     //std::vector<Texture> textures;
 
-    bool initialized = false;
-    bool use_indices = false;
+    bool initialized;
+    bool use_indices;
 
 } Mesh;
 
@@ -318,91 +318,11 @@ static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sec
     mesh->initialized = true;
 }
 
-static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
-{
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile
-    (
-        obj_path,
-        aiProcess_Triangulate |
-        aiProcess_GenSmoothNormals |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_FlipUVs
-    );
-
-    if (!scene || !scene->HasMeshes())
-    {
-        std::cerr << "Assimp error: " << importer.GetErrorString() << std::endl;
-        mesh->initialized = false;
-        return;
-    }
-
-    mesh->vertices = DynArray_Create_T(Vertex, 100, NULL);
-    mesh->indices = DynArray_Create_T(unsigned int, 100, NULL);
-    mesh->textures = DynArray_Create_T(Texture, 1, NULL);
-
-    unsigned int indexOffset = 0;
-
-    // Fill in the vertex data
-    for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
-    {
-        aiMesh* aimesh = scene->mMeshes[i];
-
-        for (unsigned int v = 0; v < aimesh->mNumVertices; ++v)
-        {
-            aiVector3D pos = aimesh->mVertices[v];
-            aiVector3D normal = aimesh->HasNormals() ? aimesh->mNormals[v] : aiVector3D(0, 1, 0);
-            aiVector3D tex = aimesh->HasTextureCoords(0) ? aimesh->mTextureCoords[0][v] : aiVector3D(0, 0, 0);
-
-            Vertex vert = { (Vector3){pos.x, pos.y, pos.z}, (Vector2){tex.x, tex.y}, (Vector3){normal.x, normal.y, normal.z} };
-            DynArray_Push_T(Vertex, &mesh->vertices, vert);
-        }
-
-        for (unsigned int f = 0; f < aimesh->mNumFaces; ++f)
-        {
-            const aiFace face = aimesh->mFaces[f];
-            for (unsigned int j = 0; j < face.mNumIndices; ++j)
-            {
-                DynArray_Push_T(unsigned int, &mesh->indices, face.mIndices[j] + indexOffset);
-            }
-        }
-
-        indexOffset += aimesh->mNumVertices;
-    }
-
-    if (scene->HasMaterials())
-    {
-        for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
-        {
-            aiMaterial* material = scene->mMaterials[i];
-            if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-            {
-                aiString texture_path;
-                if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texture_path) == AI_SUCCESS)
-                {
-                    std::filesystem::path modelDir = std::filesystem::path(obj_path).parent_path();
-                    std::string full_tex_path = (modelDir / texture_path.C_Str()).string();
-
-                    Texture tex;
-                    Texture_Create(&tex, full_tex_path.c_str(), true);
-                    DynArray_Push_T(Texture, &mesh->textures, tex);
-                }   
-            }
-        }
-    }
-
-    mesh->use_indices = true;
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-    mesh->initialized = true;
-}
-
 static inline void Mesh_Upload(Mesh* mesh)
 {
     if (!mesh->initialized)
     {
-        std::cout<< "Mesh not initialized with shape" << std::endl;
+        printf("Mesh not initialized with shape\n");
         return;
     } 
 
@@ -434,7 +354,7 @@ static inline void Mesh_Draw(const Mesh* mesh)
 {
     if (!mesh->initialized)
     {
-        std::cout<< "Mesh not initialized with shape" << std::endl;
+        printf("Mesh not initialized with shape\n");
         return;
     } 
 
@@ -452,7 +372,7 @@ static inline void Mesh_DrawWireFrame(const Mesh* mesh)
 {
     if (!mesh->initialized)
     {
-        std::cout<< "Mesh not initialized with shape" << std::endl;
+        printf("Mesh not initialized with shape\n");
         return;
     } 
 
@@ -475,5 +395,9 @@ static inline void Mesh_Delete(Mesh* mesh)
     mesh->VBO = 0;
     mesh->EBO = 0;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

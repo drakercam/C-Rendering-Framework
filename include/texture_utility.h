@@ -1,6 +1,10 @@
 #ifndef TEXTURE_UTILITY_H
 #define TEXTURE_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <glad/glad.h>
@@ -21,7 +25,7 @@ typedef struct
 static inline void Texture_Create(Texture* tex, const char* path, bool flip_vert)
 {
     tex->path = String_Create(512, path, NULL);
-    tex->local_buffer = nullptr;
+    tex->local_buffer = NULL;
     tex->width = 0;
     tex->height = 0;
     tex->bits_per_pixel = 0;
@@ -67,5 +71,9 @@ static inline void Texture_Disable(void)
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

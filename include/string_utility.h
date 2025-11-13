@@ -1,6 +1,10 @@
 #ifndef STRING_UTILITY_H
 #define STRING_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +75,7 @@ static inline String String_Create(size_t capacity, const char* c_str, Arena* al
 
     if (allocator)
     {
-        str.data = static_cast<char*>(Arena_Alloc(allocator, capacity));
+        str.data = (char*)Arena_Alloc(allocator, capacity);
     }
     else
     {
@@ -147,7 +151,7 @@ static inline String String_Copy(const String* src, Arena* allocator)
 
     if (allocator)
     {
-        copy.data = static_cast<char*>(Arena_Alloc(allocator, copy.capacity));
+        copy.data = (char*)Arena_Alloc(allocator, copy.capacity);
     }
     else
     {
@@ -164,5 +168,9 @@ static inline String String_Copy(const String* src, Arena* allocator)
 
     return copy;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

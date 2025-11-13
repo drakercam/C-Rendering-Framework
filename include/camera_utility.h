@@ -1,6 +1,10 @@
 #ifndef CAMERA_UTILITY_H
 #define CAMERA_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "math_utility.h"
 #include "input_utility.h"
 #include "window_utility.h"
@@ -103,7 +107,7 @@ static inline Matrix4 Camera3D_ViewMatrix(const Camera3D* camera)
     Matrix4 rotationMat = Math_QuatConvertToMat4(camera->orientation);
 
     // Transpose rotation (invert rotation)
-    Matrix4 rotationInv = (Matrix4){
+    Matrix4 rotationInv = {
         rotationMat.m[0], rotationMat.m[4], rotationMat.m[8], 0.0f,
         rotationMat.m[1], rotationMat.m[5], rotationMat.m[9], 0.0f,
         rotationMat.m[2], rotationMat.m[6], rotationMat.m[10], 0.0f,
@@ -238,5 +242,9 @@ static inline void Camera2D_Update(const Window* window, Camera2D* cam, float dt
     if (IsKeyPressed(window, GLFW_KEY_Z)) cam->rotation += rotationSpeed;
     if (IsKeyPressed(window, GLFW_KEY_X)) cam->rotation -= rotationSpeed;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

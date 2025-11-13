@@ -1,6 +1,10 @@
 #ifndef SHADER_UTILITY_H
 #define SHADER_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -141,5 +145,9 @@ static inline void Shader_Delete(Shader* shader)
         shader->program = 0;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

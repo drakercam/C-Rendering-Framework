@@ -43,7 +43,7 @@ int main(void)
     Mesh_CreateRectangle(&rectangle);
     Mesh_Upload(&rectangle);
 
-    // // Create a boombox (model)
+    // Load a model
     Mesh boombox;
     Mesh_CreateModel(&boombox, "assets/boombox_4k.obj");
     Mesh_Upload(&boombox);
@@ -63,6 +63,7 @@ int main(void)
     Vector3 light_pos_world = {50.0f, 100.0f, 25.0f};
     Vector3 light_color = {1.0f, 0.95f, 0.8f};
 
+    // Initialize Transformation Stack
     Transform_Init();
 
     // Render loop
@@ -74,9 +75,9 @@ int main(void)
         // Update the camera
         Camera3D_Update(&window, &camera, Time_Delta());
 
-        Window_Clear(Colour_Crimson);
+        Window_Clear(Colour_White);
 
-        // // Draw the Dome which will represent the world itself
+        // Draw the Dome which will represent the world itself
         Transform_PushMatrix();
 
             Transform_Translate(camera.position);
@@ -208,7 +209,7 @@ int main(void)
 
         Transform_PopMatrix();
 
-        // // Draw the boom box
+        // Draw the boom box
         Transform_PushMatrix();
 
             // Perform transformations
@@ -226,18 +227,8 @@ int main(void)
             Shader_SetUniform3f(&light_shader, "lightColor", light_color);
             Shader_SetUniform3f(&light_shader, "viewPos", camera.position);
 
-            if (boombox.textures.data)
-            {  
-                Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
-                Shader_SetUniform1i(&light_shader, "uTexture", 0);
-
-                Texture_Enable(&DynArray_Get_T(Texture, &boombox.textures, 0), 0);
-            }
-            else
-            {
-                Shader_SetUniform1i(&light_shader, "uUseTexture", 0);
-                Shader_SetUniform4f(&light_shader, "uColor", Colour_Brick);
-            }
+            Shader_SetUniform1i(&light_shader, "uUseTexture", 0);
+            Shader_SetUniform4f(&light_shader, "uColor", Colour_Brick);
 
             Mesh_Draw(&boombox);
 

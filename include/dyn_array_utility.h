@@ -1,6 +1,10 @@
 #ifndef DYN_ARRAY_UTILITY_H
 #define DYN_ARRAY_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
@@ -160,5 +164,9 @@ static inline DynArray DynArray_Copy(const DynArray* src, Arena* allocator)
 
     return copy;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -19,5 +19,6 @@
 #include "string_utility.h"
 #include "arena_utility.h"
 #include "stack_utility.h"
+#include "model_utility.h"
 
 #endif

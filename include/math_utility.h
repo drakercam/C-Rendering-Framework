@@ -1,6 +1,10 @@
 #ifndef MATH_UTILITY_H
 #define MATH_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <math.h>
 
 #define PI 3.14159265358979323846f
@@ -225,7 +229,6 @@ static inline Matrix4 Math_Mat4Scale(const Vector3 s)
         0,0,0,1
     };
 }
-
 static inline Matrix4 Math_Mat4Rotate(float theta, const Vector3 axis)
 {
     // theta is expected in radians
@@ -283,7 +286,6 @@ static inline Matrix4 Math_Mat4RotateZ(float theta)
         0, 0, 0, 1
     };
 }
-
 static inline Matrix4 Math_Mat4Multiply(const Matrix4 m1, const Matrix4 m2)
 {
     Matrix4 res = {0};
@@ -404,13 +406,17 @@ static inline Matrix3 Math_QuatConvertToMat3(const Quaternion q)
     float yy = q.y*q.y;
     float zz = q.z*q.z;
 
-    return (Matrix3){
+    return (Matrix3) {
         (1-2*(yy) - 2*(zz)), (2*q.x*q.y + 2*q.w*q.z), (2*q.x*q.z - 2*q.w*q.y),
         (2*q.x*q.y - 2*q.w*q.z), (1 - 2*(xx) - 2*(zz)), (2*q.y*q.z + 2*q.w*q.x),
         (2*q.x*q.z + 2*q.w*q.y), (2*q.y*q.z - 2*q.w*q.x), (1 - 2*(xx) - 2*(yy))
-    };  
+    };
 }
 
 // -------------------------
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

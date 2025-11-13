@@ -1,6 +1,10 @@
 #ifndef FILE_UTILITY_H
 #define FILE_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "string_utility.h"
@@ -27,5 +31,9 @@ static inline String File_Load(const char* name)
 
     return contents;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,30 +1,50 @@
-CC = g++
-CFLAGS = -g -O0 -Wall -Iinclude
-LIBS = -lglfw -ldl -lGL -lm -lassimp
-SRC = src/main.cpp src/glad.c
-OUT = C_Framework
+# Compilers
+CC      = gcc
+CXX     = g++
 
-all: $(OUT)
+# Common flags
+CFLAGS  = -g -O0 -Wall -Iinclude
+CXXFLAGS= -g -O0 -Wall -Iinclude
 
-$(OUT): $(SRC)
-	$(CC) $(CFLAGS) $(SRC) -o $(OUT) $(LIBS)
+# Libraries
+CLIBS   = -lglfw -ldl -lGL -lm
+CPPLIBS = -lglfw -ldl -lGL -lm -lassimp
 
-run:
-	./$(OUT)
+# Source files
+CSRC    = src/main.c src/glad.c src/transform_utility.c
+CPPSRC  = src/main.cpp src/glad.c src/transform_utility.c
 
+# Output files
+COUT    = Framework_C
+CPPOUT  = Framework_CPP
+
+# Default target
+all: $(COUT) $(CPPOUT)
+
+# C build
+$(COUT): $(CSRC)
+	$(CC) $(CFLAGS) $(CSRC) -o $(COUT) $(CLIBS)
+
+# C++ build
+$(CPPOUT): $(CPPSRC)
+	$(CXX) $(CXXFLAGS) $(CPPSRC) -o $(CPPOUT) $(CPPLIBS)
+
+# Run targets
+run_c:
+	./$(COUT)
+
+run_cpp:
+	./$(CPPOUT)
+
+# Clean
 clean:
-	rm -f $(OUT)
+	rm -f $(COUT) $(CPPOUT)
 
-go:
-	make && make run
+# Convenience
+go_c: $(COUT)
+	./$(COUT)
 
-reset:
-	make clean && make && make run
+go_cpp: $(CPPOUT)
+	./$(CPPOUT)
 
-memcheck:
-	valgrind --leak-check=full \
-         --show-leak-kinds=all \
-         --suppressions=gl.supp \
-         --suppressions=clean.supp \
-         ./$(OUT)
-
+reset: clean all

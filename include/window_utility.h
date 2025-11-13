@@ -1,10 +1,14 @@
 #ifndef WINDOW_UTILITY_H
 #define WINDOW_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdio.h>
+#include <stdbool.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include <string>
 
 #include "math_utility.h"
 #include "time_utility.h"
@@ -18,7 +22,7 @@ typedef struct
 {
     GLFWwindow* w;
     int width, height;
-    std::string title;
+    const char* title;
     float fov;
     float aspect;
 
@@ -31,10 +35,10 @@ static inline bool Window_Init(Window* window)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window->w = glfwCreateWindow(window->width, window->height, window->title.c_str(), NULL, NULL);
+    window->w = glfwCreateWindow(window->width, window->height, window->title, NULL, NULL);
     if (window->w == NULL)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        printf("Failed to create GLFW window\n");
         glfwTerminate();
         return false;
     }
@@ -42,7 +46,7 @@ static inline bool Window_Init(Window* window)
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        printf("Failed to initialize GLAD\n");
         glfwDestroyWindow(window->w);
         glfwTerminate();
         return false;
@@ -53,14 +57,14 @@ static inline bool Window_Init(Window* window)
     return true;
 }
 
-static inline bool Window_Create(Window* window, int w, int h, float fov, std::string t)
+static inline bool Window_Create(Window* window, int w, int h, float fov, const char* t)
 {
     window->w = NULL;
     window->width = w;
     window->height = h;
     window->title = t;
     window->fov = Math_DegToRad(fov);
-    window->aspect = float(window->width) / float(window->height);
+    window->aspect = (float)window->width / (float)window->height;
 
     return Window_Init(window);
 }
@@ -105,5 +109,9 @@ static inline void Window_PrintFPS(void)
 {
     printf("FPS: %.2f | DeltaTime: %.4f\n", 1.0f / Time_Delta(), Time_Delta());
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
