@@ -2,7 +2,7 @@
 #define MODEL_UTILITY_H
 
 #include "mesh_utility.h"
-#include "dyn_array_utility.h"
+#include "darray_utility.h"
 
 #ifdef __cplusplus
 
@@ -36,9 +36,9 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
         return;
     }
 
-    mesh->vertices = DynArray_Create_T(Vertex, 100, NULL);
-    mesh->indices = DynArray_Create_T(unsigned int, 100, NULL);
-    mesh->textures = DynArray_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 100, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 100, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     unsigned int indexOffset = 0;
 
@@ -54,7 +54,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
             aiVector3D tex = aimesh->HasTextureCoords(0) ? aimesh->mTextureCoords[0][v] : aiVector3D(0, 0, 0);
 
             Vertex vert = { (Vector3){pos.x, pos.y, pos.z}, (Vector2){tex.x, tex.y}, (Vector3){normal.x, normal.y, normal.z} };
-            DynArray_Push_T(Vertex, &mesh->vertices, vert);
+            DArray_Push_T(Vertex, &mesh->vertices, vert);
         }
 
         for (unsigned int f = 0; f < aimesh->mNumFaces; ++f)
@@ -62,7 +62,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
             const aiFace face = aimesh->mFaces[f];
             for (unsigned int j = 0; j < face.mNumIndices; ++j)
             {
-                DynArray_Push_T(unsigned int, &mesh->indices, face.mIndices[j] + indexOffset);
+                DArray_Push_T(unsigned int, &mesh->indices, face.mIndices[j] + indexOffset);
             }
         }
 
@@ -84,7 +84,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
 
                     Texture tex;
                     Texture_Create(&tex, full_tex_path.c_str(), true);
-                    DynArray_Push_T(Texture, &mesh->textures, tex);
+                    DArray_Push_T(Texture, &mesh->textures, tex);
                 }   
             }
         }
@@ -116,9 +116,9 @@ static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
         return;
     }
 
-    mesh->vertices = DynArray_Create_T(Vertex, 256, NULL);
-    mesh->indices = DynArray_Create_T(unsigned int, 256, NULL);
-    mesh->textures = DynArray_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 256, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 256, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     float vx[10000][3];
     float vt[10000][2];
@@ -159,8 +159,8 @@ static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
                         {vt[tIdx[i]-1][0], vt[tIdx[i]-1][1]},
                         {vn[nIdx[i]-1][0], vn[nIdx[i]-1][1], vn[nIdx[i]-1][2]}
                     };
-                    DynArray_Push_T(Vertex, &mesh->vertices, vert);
-                    DynArray_Push_T(unsigned int, &mesh->indices, DynArray_Size(&mesh->vertices) - 1);
+                    DArray_Push_T(Vertex, &mesh->vertices, vert);
+                    DArray_Push_T(unsigned int, &mesh->indices, DArray_Size(&mesh->vertices) - 1);
                 }
             }
         }

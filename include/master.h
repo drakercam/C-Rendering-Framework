@@ -15,7 +15,7 @@
 #include "transform_utility.h"
 #include "time_utility.h"
 #include "texture_utility.h"
-#include "dyn_array_utility.h"
+#include "darray_utility.h"
 #include "string_utility.h"
 #include "arena_utility.h"
 #include "stack_utility.h"

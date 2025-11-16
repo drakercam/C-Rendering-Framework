@@ -1,10 +1,6 @@
 #ifndef MATH_UTILITY_H
 #define MATH_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <math.h>
 
 #define PI 3.14159265358979323846f
@@ -414,9 +410,5 @@ static inline Matrix3 Math_QuatConvertToMat3(const Quaternion q)
 }
 
 // -------------------------
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

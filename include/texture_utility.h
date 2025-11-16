@@ -1,10 +1,6 @@
 #ifndef TEXTURE_UTILITY_H
 #define TEXTURE_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <glad/glad.h>
@@ -71,9 +67,5 @@ static inline void Texture_Disable(void)
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -1,10 +1,6 @@
 #ifndef COLOUR_UTILITY_H
 #define COLOUR_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "math_utility.h"
 
 // COLOURS ARE JUST VECTOR4's
@@ -82,9 +78,5 @@ extern "C" {
 #define Colour_Wheat        ((Vector4){ 0.96f, 0.87f, 0.7f, 1.0f })
 #define Colour_Amber        ((Vector4){ 1.0f, 0.75f, 0.0f, 1.0f })
 #define Colour_Brick        ((Vector4){ 0.8f, 0.25f, 0.33f, 1.0f })
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

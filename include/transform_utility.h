@@ -1,6 +1,5 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef TRANSFORM_UTILITY_H
+#define TRANSFORM_UTILITY_H
 
 #include "math_utility.h"
 #include "stack_utility.h"
@@ -10,7 +9,7 @@ typedef struct
     Vector3 position;
     Vector3 rotation;
     Vector3 scale;
-    
+
 } Transform;
 
 STACK_DEFINE(Matrix4, MatrixStack, 256);
@@ -28,6 +27,4 @@ void Transform_Scale(Vector3 s);
 Matrix4 Transform_ModelMatrix(void);
 void Transform_LoadIdentity(void);
 
-#ifdef __cplusplus
-}
 #endif

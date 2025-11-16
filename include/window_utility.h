@@ -1,10 +1,6 @@
 #ifndef WINDOW_UTILITY_H
 #define WINDOW_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <glad/glad.h>
@@ -109,9 +105,5 @@ static inline void Window_PrintFPS(void)
 {
     printf("FPS: %.2f | DeltaTime: %.4f\n", 1.0f / Time_Delta(), Time_Delta());
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

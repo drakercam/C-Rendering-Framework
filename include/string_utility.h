@@ -1,10 +1,6 @@
 #ifndef STRING_UTILITY_H
 #define STRING_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -168,9 +164,5 @@ static inline String String_Copy(const String* src, Arena* allocator)
 
     return copy;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -1,10 +1,6 @@
 #ifndef CAMERA_UTILITY_H
 #define CAMERA_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "math_utility.h"
 #include "input_utility.h"
 #include "window_utility.h"
@@ -242,9 +238,5 @@ static inline void Camera2D_Update(const Window* window, Camera2D* cam, float dt
     if (IsKeyPressed(window, GLFW_KEY_Z)) cam->rotation += rotationSpeed;
     if (IsKeyPressed(window, GLFW_KEY_X)) cam->rotation -= rotationSpeed;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

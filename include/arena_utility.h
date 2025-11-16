@@ -1,10 +1,6 @@
 #ifndef ARENA_UTILITY_H
 #define ARENA_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdalign.h>
@@ -60,9 +56,5 @@ static inline void Arena_Free(Arena* a)
     a->current = NULL;
     a->end = NULL;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

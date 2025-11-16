@@ -231,7 +231,7 @@ int main(void)
                 Shader_SetUniform1i(&light_shader, "uUseTexture", 1);
                 Shader_SetUniform1i(&light_shader, "uTexture", 0);
 
-                Texture_Enable(&DynArray_Get_T(Texture, &boombox.textures, 0), 0);
+                Texture_Enable(&DArray_Get_T(Texture, &boombox.textures, 0), 0);
             }
             else
             {

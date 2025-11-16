@@ -1,10 +1,6 @@
 #ifndef STACK_UTILITY_H
 #define STACK_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -34,9 +30,5 @@ static inline bool name##_IsEmpty(name* s)                             \
 {                                                                      \
     return (s->top == 0) ? true : false;                               \
 }                                                                      \
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -1,10 +1,6 @@
 #ifndef TIME_UTILITY_H
 #define TIME_UTILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <GLFW/glfw3.h>
 
 static float Time_LastFrame = 0.0f;
@@ -22,9 +18,5 @@ static inline void Time_Update()
 
 static inline float Time_Delta(void) { return Time_DeltaTime; }
 static inline float Time_Total(void) { return Time_TotalTime; }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
