@@ -26,9 +26,9 @@ typedef struct
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
-     vertices;     // holds vertex structs
-    DARRay indices;      // holds unsigned ints
-    DARRay textures;     // holds textures
+    DArray vertices;     // holds vertex structs
+    DArray indices;      // holds unsigned ints
+    DArray textures;     // holds textures
     //std::vector<float> vertices;
     //std::vector<unsigned int> indices;
     //std::vector<Texture> textures;
@@ -42,15 +42,15 @@ typedef struct
 
 static inline void Mesh_CreateTriangle(Mesh* mesh)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 3, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 3, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     Vertex v1 = {{-0.5f, -0.5f, 0.0f},   {0.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
     Vertex v2 = {{0.5f, -0.5f, 0.0f},   {1.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
     Vertex v3 = {{0.0f, 0.5f, 0.0f},   {0.5f,1.0f},  {0.0f, 0.0f, 1.0f}};
-    DARRay_Push_T(Vertex, &mesh->vertices, v1);
-    DARRay_Push_T(Vertex, &mesh->vertices, v2);
-    DARRay_Push_T(Vertex, &mesh->vertices, v3);
+    DArray_Push_T(Vertex, &mesh->vertices, v1);
+    DArray_Push_T(Vertex, &mesh->vertices, v2);
+    DArray_Push_T(Vertex, &mesh->vertices, v3);
 
     mesh->use_indices = false;
 
@@ -63,20 +63,20 @@ static inline void Mesh_CreateTriangle(Mesh* mesh)
 
 static inline void Mesh_CreateRectangle(Mesh* mesh)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 4, NULL);
-    mesh->indices = DARRay_Create_T(unsigned int, 6, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 4, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 6, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     Vertex v0 = {{0.5f,  0.5f, 0.0f},   {1.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
     Vertex v1 = {{0.5f, -0.5f, 0.0f},   {1.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
     Vertex v2 = {{-0.5f, -0.5f, 0.0f},   {0.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
     Vertex v3 = {{-0.5f,  0.5f, 0.0f},   {0.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
 
-    DARRay_Push_T(Vertex, &mesh->vertices, v0); DARRay_Push_T(Vertex, &mesh->vertices, v1);
-    DARRay_Push_T(Vertex, &mesh->vertices, v2); DARRay_Push_T(Vertex, &mesh->vertices, v3);
+    DArray_Push_T(Vertex, &mesh->vertices, v0); DArray_Push_T(Vertex, &mesh->vertices, v1);
+    DArray_Push_T(Vertex, &mesh->vertices, v2); DArray_Push_T(Vertex, &mesh->vertices, v3);
 
-    DARRay_Push_T(unsigned int, &mesh->indices, 0); DARRay_Push_T(unsigned int, &mesh->indices, 1); DARRay_Push_T(unsigned int, &mesh->indices, 3);
-    DARRay_Push_T(unsigned int, &mesh->indices, 1); DARRay_Push_T(unsigned int, &mesh->indices, 2); DARRay_Push_T(unsigned int, &mesh->indices, 3);
+    DArray_Push_T(unsigned int, &mesh->indices, 0); DArray_Push_T(unsigned int, &mesh->indices, 1); DArray_Push_T(unsigned int, &mesh->indices, 3);
+    DArray_Push_T(unsigned int, &mesh->indices, 1); DArray_Push_T(unsigned int, &mesh->indices, 2); DArray_Push_T(unsigned int, &mesh->indices, 3);
 
     mesh->use_indices = true;
 
@@ -90,13 +90,13 @@ static inline void Mesh_CreateRectangle(Mesh* mesh)
 // // TODO
 static inline void Mesh_CreateCircle(Mesh* mesh, float radius, int sectors)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 10, NULL);
-    mesh->indices = DARRay_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     // Center vertex
     Vertex center = { {0.0f, 0.0f, 0.0f}, {0.5f, 0.5f}, {0.0f, 0.0f, 1.0f} };
-    DARRay_Push_T(Vertex, &mesh->vertices, center);
+    DArray_Push_T(Vertex, &mesh->vertices, center);
 
     for (int i = 0; i <= sectors; ++i)
     {
@@ -112,15 +112,15 @@ static inline void Mesh_CreateCircle(Mesh* mesh, float radius, int sectors)
             {0.0f, 0.0f, 1.0f}
         };
 
-        DARRay_Push_T(Vertex, &mesh->vertices, vert);
+        DArray_Push_T(Vertex, &mesh->vertices, vert);
     }
 
     // Indices (triangle fan)
     for (int i = 1; i <= sectors; ++i)
     {
-        DARRay_Push_T(unsigned int, &mesh->indices, 0);
-        DARRay_Push_T(unsigned int, &mesh->indices, i);
-        DARRay_Push_T(unsigned int, &mesh->indices, i + 1);
+        DArray_Push_T(unsigned int, &mesh->indices, 0);
+        DArray_Push_T(unsigned int, &mesh->indices, i);
+        DArray_Push_T(unsigned int, &mesh->indices, i + 1);
     }
 
     mesh->use_indices = true;
@@ -132,9 +132,9 @@ static inline void Mesh_CreateCircle(Mesh* mesh, float radius, int sectors)
 
 static inline void Mesh_CreateCube(Mesh* mesh)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 24, NULL);
-    mesh->indices = DARRay_Create_T(unsigned int, 36, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 24, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 36, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     // pos                  // uv       // normal
     // Front face
@@ -173,14 +173,14 @@ static inline void Mesh_CreateCube(Mesh* mesh)
     Vertex v22 = {{0.5f,-0.5f, 0.5f},      {0.0f,0.0f},  {0.0f,-1.0f, 0.0f}};
     Vertex v23 = {{-0.5f,-0.5f, 0.5f},      {1.0f,0.0f},  {0.0f,-1.0f, 0.0f}};
 
-    DARRay_Push_T(Vertex, &mesh->vertices, v0); DARRay_Push_T(Vertex, &mesh->vertices, v1); DARRay_Push_T(Vertex, &mesh->vertices, v2);
-    DARRay_Push_T(Vertex, &mesh->vertices, v3); DARRay_Push_T(Vertex, &mesh->vertices, v4); DARRay_Push_T(Vertex, &mesh->vertices, v5);
-    DARRay_Push_T(Vertex, &mesh->vertices, v6); DARRay_Push_T(Vertex, &mesh->vertices, v7); DARRay_Push_T(Vertex, &mesh->vertices, v8);
-    DARRay_Push_T(Vertex, &mesh->vertices, v9); DARRay_Push_T(Vertex, &mesh->vertices, v10); DARRay_Push_T(Vertex, &mesh->vertices, v11);
-    DARRay_Push_T(Vertex, &mesh->vertices, v12); DARRay_Push_T(Vertex, &mesh->vertices, v13); DARRay_Push_T(Vertex, &mesh->vertices, v14);
-    DARRay_Push_T(Vertex, &mesh->vertices, v15); DARRay_Push_T(Vertex, &mesh->vertices, v16); DARRay_Push_T(Vertex, &mesh->vertices, v17);
-    DARRay_Push_T(Vertex, &mesh->vertices, v18); DARRay_Push_T(Vertex, &mesh->vertices, v19); DARRay_Push_T(Vertex, &mesh->vertices, v20);
-    DARRay_Push_T(Vertex, &mesh->vertices, v21); DARRay_Push_T(Vertex, &mesh->vertices, v22); DARRay_Push_T(Vertex, &mesh->vertices, v23);
+    DArray_Push_T(Vertex, &mesh->vertices, v0); DArray_Push_T(Vertex, &mesh->vertices, v1); DArray_Push_T(Vertex, &mesh->vertices, v2);
+    DArray_Push_T(Vertex, &mesh->vertices, v3); DArray_Push_T(Vertex, &mesh->vertices, v4); DArray_Push_T(Vertex, &mesh->vertices, v5);
+    DArray_Push_T(Vertex, &mesh->vertices, v6); DArray_Push_T(Vertex, &mesh->vertices, v7); DArray_Push_T(Vertex, &mesh->vertices, v8);
+    DArray_Push_T(Vertex, &mesh->vertices, v9); DArray_Push_T(Vertex, &mesh->vertices, v10); DArray_Push_T(Vertex, &mesh->vertices, v11);
+    DArray_Push_T(Vertex, &mesh->vertices, v12); DArray_Push_T(Vertex, &mesh->vertices, v13); DArray_Push_T(Vertex, &mesh->vertices, v14);
+    DArray_Push_T(Vertex, &mesh->vertices, v15); DArray_Push_T(Vertex, &mesh->vertices, v16); DArray_Push_T(Vertex, &mesh->vertices, v17);
+    DArray_Push_T(Vertex, &mesh->vertices, v18); DArray_Push_T(Vertex, &mesh->vertices, v19); DArray_Push_T(Vertex, &mesh->vertices, v20);
+    DArray_Push_T(Vertex, &mesh->vertices, v21); DArray_Push_T(Vertex, &mesh->vertices, v22); DArray_Push_T(Vertex, &mesh->vertices, v23);
 
     unsigned int indices[36] = 
     {
@@ -194,7 +194,7 @@ static inline void Mesh_CreateCube(Mesh* mesh)
 
     for (size_t i = 0; i < 36; ++i)
     {
-        DARRay_Push_T(unsigned int, &mesh->indices, indices[i]);
+        DArray_Push_T(unsigned int, &mesh->indices, indices[i]);
     }
 
     mesh->use_indices = true;
@@ -208,9 +208,9 @@ static inline void Mesh_CreateCube(Mesh* mesh)
 
 static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int sectors)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 10, NULL);
-    mesh->indices = DARRay_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     for (int i = 0; i <= stacks; ++i)
     {
@@ -232,7 +232,7 @@ static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int s
             float nz = z / radius;
 
             Vertex vert = { {x, y, z}, {u, v}, {nx, ny, nz} };
-            DARRay_Push_T(Vertex, &mesh->vertices, vert);
+            DArray_Push_T(Vertex, &mesh->vertices, vert);
         }
     }
 
@@ -243,13 +243,13 @@ static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int s
             int a = i * (sectors + 1) + j;
             int b = a + sectors + 1;
 
-            DARRay_Push_T(unsigned int, &mesh->indices, a);
-            DARRay_Push_T(unsigned int, &mesh->indices, b);
-            DARRay_Push_T(unsigned int, &mesh->indices, a + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, a);
+            DArray_Push_T(unsigned int, &mesh->indices, b);
+            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
 
-            DARRay_Push_T(unsigned int, &mesh->indices, a + 1);
-            DARRay_Push_T(unsigned int, &mesh->indices, b);
-            DARRay_Push_T(unsigned int, &mesh->indices, b + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, b);
+            DArray_Push_T(unsigned int, &mesh->indices, b + 1);
         }
     }
 
@@ -262,9 +262,9 @@ static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int s
 
 static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sectors)
 {
-    mesh->vertices = DARRay_Create_T(Vertex, 10, NULL);
-    mesh->indices = DARRay_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DARRay_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
+    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
+    mesh->textures = DArray_Create_T(Texture, 1, NULL);
 
     for (int i = 0; i <= stacks; ++i)
     {
@@ -286,7 +286,7 @@ static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sec
             float nz = -(z / radius);
 
             Vertex vert = { {x, y, z}, {u, v}, {nx, ny, nz} };
-            DARRay_Push_T(Vertex, &mesh->vertices, vert);
+            DArray_Push_T(Vertex, &mesh->vertices, vert);
         }
     }
 
@@ -297,13 +297,13 @@ static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sec
             int a = i * (sectors + 1) + j;
             int b = a + sectors + 1;
 
-            DARRay_Push_T(unsigned int, &mesh->indices, a);
-            DARRay_Push_T(unsigned int, &mesh->indices, a + 1);
-            DARRay_Push_T(unsigned int, &mesh->indices, b);
+            DArray_Push_T(unsigned int, &mesh->indices, a);
+            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, b);
 
-            DARRay_Push_T(unsigned int, &mesh->indices, a + 1);
-            DARRay_Push_T(unsigned int, &mesh->indices, b + 1);
-            DARRay_Push_T(unsigned int, &mesh->indices, b);
+            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, b + 1);
+            DArray_Push_T(unsigned int, &mesh->indices, b);
         }
     }
 
@@ -328,12 +328,12 @@ static inline void Mesh_Upload(Mesh* mesh)
 
     glBindVertexArray(mesh->VAO);
     glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-    glBufferData(GL_ARRAY_BUFFER, DARRay_Size(&mesh->vertices) * sizeof(Vertex), mesh->vertices.data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, DArray_Size(&mesh->vertices) * sizeof(Vertex), mesh->vertices.data, GL_STATIC_DRAW);
 
     if (mesh->use_indices)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DARRay_Size(&mesh->indices) * sizeof(unsigned int), mesh->indices.data, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, DArray_Size(&mesh->indices) * sizeof(unsigned int), mesh->indices.data, GL_STATIC_DRAW);
     }
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
@@ -357,9 +357,9 @@ static inline void Mesh_Draw(const Mesh* mesh)
     glBindVertexArray(mesh->VAO);
 
     if (mesh->use_indices)
-        glDrawElements(GL_TRIANGLES, DARRay_Size(&mesh->indices), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, DArray_Size(&mesh->indices), GL_UNSIGNED_INT, 0);
     else
-        glDrawArrays(GL_TRIANGLES, 0, DARRay_Size(&mesh->vertices));
+        glDrawArrays(GL_TRIANGLES, 0, DArray_Size(&mesh->vertices));
 
     glBindVertexArray(0);
 }
@@ -383,9 +383,9 @@ static inline void Mesh_Delete(Mesh* mesh)
     if (mesh->VAO) glDeleteVertexArrays(1, &mesh->VAO);
     if (mesh->VBO) glDeleteBuffers(1, &mesh->VBO);
     
-    DARRay_Free(&mesh->vertices);
-    DARRay_Free(&mesh->textures);
-    if (mesh->use_indices) DARRay_Free(&mesh->indices);
+    DArray_Free(&mesh->vertices);
+    DArray_Free(&mesh->textures);
+    if (mesh->use_indices) DArray_Free(&mesh->indices);
     
     mesh->VAO = 0;
     mesh->VBO = 0;

@@ -49,7 +49,7 @@ static inline DArray DArray_Create(size_t element_size, size_t capacity, Arena* 
     return a;                                                                                                                                                                                                                                                                                                           
 }         
 
-#define TYPE_ID(T) ((size_t)(uintptr_t)&(T*)0)
+#define TYPE_ID(T) ((size_t)(uintptr_t)(const void*)(#T))
 
 #define DArray_Create_T(T, capacity, allocator) \
     DArray_Create(sizeof(T), (capacity), (allocator), TYPE_ID(T))
