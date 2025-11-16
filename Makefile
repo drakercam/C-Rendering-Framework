@@ -11,8 +11,8 @@ CLIBS   = -lglfw -ldl -lGL -lm
 CPPLIBS = -lglfw -ldl -lGL -lm -lassimp
 
 # Source files
-CSRC    = src/main.c src/glad.c src/transform_utility.c
-CPPSRC  = src/main.cpp src/glad.c src/transform_utility.c
+CSRC    = src/main.c src/glad.c
+CPPSRC  = src/main.cpp src/glad.c
 
 # Output files
 COUT    = Framework_C
