@@ -5,6 +5,8 @@
 #include "input_utility.h"
 #include "window_utility.h"
 
+#include <stdbool.h>
+
 typedef struct
 {
     float speed;
@@ -211,15 +213,18 @@ static inline void Camera2D_Follow(Camera2D* cam, Vector2 target, float lerp_fac
     cam->position.y += (target.y - cam->position.y) * lerp_factor;
 }
 
-static inline void Camera2D_Update(const Window* window, Camera2D* cam, float dt)
+static inline void Camera2D_Update(const Window* window, Camera2D* cam, float dt, bool to_move, bool to_zoom, bool to_rotate)
 {
     Vector2 moveDir = (Vector2){0.0f, 0.0f};
     float moveSpeed = cam->speed * dt; // adjust speed to your liking
 
-    if (IsKeyPressed(window, GLFW_KEY_W) || IsKeyPressed(window, GLFW_KEY_UP)) moveDir.y += 1.0f;
-    if (IsKeyPressed(window, GLFW_KEY_S) || IsKeyPressed(window, GLFW_KEY_DOWN)) moveDir.y -= 1.0f;
-    if (IsKeyPressed(window, GLFW_KEY_A) || IsKeyPressed(window, GLFW_KEY_LEFT)) moveDir.x -= 1.0f;
-    if (IsKeyPressed(window, GLFW_KEY_D) || IsKeyPressed(window, GLFW_KEY_RIGHT)) moveDir.x += 1.0f;
+    if (to_move)
+    {
+        if (IsKeyPressed(window, GLFW_KEY_S) || IsKeyPressed(window, GLFW_KEY_DOWN)) moveDir.y -= 1.0f;
+        if (IsKeyPressed(window, GLFW_KEY_A) || IsKeyPressed(window, GLFW_KEY_LEFT)) moveDir.x -= 1.0f;
+        if (IsKeyPressed(window, GLFW_KEY_D) || IsKeyPressed(window, GLFW_KEY_RIGHT)) moveDir.x += 1.0f;
+        if (IsKeyPressed(window, GLFW_KEY_W) || IsKeyPressed(window, GLFW_KEY_UP)) moveDir.y += 1.0f;
+    }
 
     if (Math_Vec2Length(moveDir) > 0.0f)
     {
@@ -229,14 +234,20 @@ static inline void Camera2D_Update(const Window* window, Camera2D* cam, float dt
     }
 
     // Zoom controls
-    if (IsKeyPressed(window, GLFW_KEY_Q)) cam->zoom += dt;       // zoom in
-    if (IsKeyPressed(window, GLFW_KEY_E)) cam->zoom -= dt;       // zoom out
-    if (cam->zoom < 0.1f) cam->zoom = 0.1f;                      // clamp
+    if (to_zoom)
+    {
+        if (IsKeyPressed(window, GLFW_KEY_E)) cam->zoom -= dt;       // zoom out
+        if (cam->zoom < 0.1f) cam->zoom = 0.1f;                      // clamp
+        if (IsKeyPressed(window, GLFW_KEY_Q)) cam->zoom += dt;       // zoom in
+    }
 
     // Optional: rotation controls
-    float rotationSpeed = 1.0f * dt; // radians/sec
-    if (IsKeyPressed(window, GLFW_KEY_Z)) cam->rotation += rotationSpeed;
-    if (IsKeyPressed(window, GLFW_KEY_X)) cam->rotation -= rotationSpeed;
+    if (to_rotate)
+    {
+        float rotationSpeed = 1.0f * dt; // radians/sec
+        if (IsKeyPressed(window, GLFW_KEY_Z)) cam->rotation += rotationSpeed;
+        if (IsKeyPressed(window, GLFW_KEY_X)) cam->rotation -= rotationSpeed;
+    }
 }
 
 #endif

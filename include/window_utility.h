@@ -106,4 +106,11 @@ static inline void Window_PrintFPS(void)
     printf("FPS: %.2f | DeltaTime: %.4f\n", 1.0f / Time_Delta(), Time_Delta());
 }
 
+static inline Vector2 Window_GetWindowSize(const Window* window)
+{   
+    int width, height;
+    glfwGetWindowSize(window->w, &width, &height);
+    return (Vector2) {(float)width, (float)height};
+}
+
 #endif
