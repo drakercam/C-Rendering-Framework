@@ -3,6 +3,7 @@
 
 #include "mesh_utility.h"
 #include "darray_utility.h"
+#include "arena_utility.h"
 
 #ifdef __cplusplus
 
@@ -17,7 +18,7 @@
 #include <assimp/postprocess.h>
 #include <filesystem>
 
-static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
+static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path, Arena* allocator)
 {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile
@@ -36,9 +37,16 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
         return;
     }
 
-    mesh->vertices = DArray_Create_T(Vertex, 100, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 100, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
+    size_t estimated_vertex_count = scene->mNumMeshes > 0 ? 
+                                    1.2 * scene->mMeshes[0]->mNumVertices * scene->mNumMeshes : 10000;
+    mesh->vertices = DArray_Create_T(Vertex, estimated_vertex_count, allocator);
+
+    size_t estimated_index_count = scene->mNumMeshes > 0 ?
+                                1.2 * scene->mMeshes[0]->mNumFaces * 3 * scene->mNumMeshes : 30000;
+    mesh->indices = DArray_Create_T(unsigned int, estimated_index_count, allocator);
+
+    size_t estimated_texture_count = scene->mNumMaterials > 0 ? scene->mNumMaterials : 4;
+    mesh->textures = DArray_Create_T(Texture, estimated_texture_count, allocator);
 
     unsigned int indexOffset = 0;
 
@@ -106,7 +114,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const std::string& obj_path)
 #include <string.h>
 #include <stdbool.h>
 
-static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
+static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path, Arena* allocator)
 {
     FILE* file = fopen(obj_path, "r");
     if (!file)
@@ -116,16 +124,35 @@ static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
         return;
     }
 
-    mesh->vertices = DArray_Create_T(Vertex, 256, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 256, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
-
-    float vx[10000][3];
-    float vt[10000][2];
-    float vn[10000][3];
-    unsigned int vCount = 0, vtCount = 0, vnCount = 0;
+    // --- PASS 1: Count elements ---
+    unsigned int vertex_count = 0;
+    unsigned int tex_count    = 0;
+    unsigned int normal_count = 0;
+    unsigned int face_count   = 0;
 
     char line[256];
+    while (fgets(line, sizeof(line), file))
+    {
+        if (strncmp(line, "v ", 2) == 0) vertex_count++;
+        else if (strncmp(line, "vt ", 3) == 0) tex_count++;
+        else if (strncmp(line, "vn ", 3) == 0) normal_count++;
+        else if (strncmp(line, "f ", 2) == 0) face_count++;
+    }
+
+    // --- Allocate DArrays based on counts ---
+    mesh->vertices = DArray_Create_T(Vertex, face_count * 3, allocator);
+    mesh->indices  = DArray_Create_T(unsigned int, face_count * 3, allocator);
+    mesh->textures = DArray_Create_T(Texture, 4, allocator); // arbitrary small number
+
+    // --- PASS 2: Read actual data ---
+    rewind(file);
+
+    float vx[vertex_count][3];
+    float vt[tex_count][2];
+    float vn[normal_count][3];
+
+    unsigned int vCount = 0, vtCount = 0, vnCount = 0;
+
     while (fgets(line, sizeof(line), file))
     {
         if (strncmp(line, "v ", 2) == 0)
@@ -150,6 +177,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
                                &vIdx[0], &tIdx[0], &nIdx[0],
                                &vIdx[1], &tIdx[1], &nIdx[1],
                                &vIdx[2], &tIdx[2], &nIdx[2]);
+
             if (count == 9)
             {
                 for (int i = 0; i < 3; ++i)
@@ -159,6 +187,7 @@ static inline void Mesh_CreateModel(Mesh* mesh, const char* obj_path)
                         {vt[tIdx[i]-1][0], vt[tIdx[i]-1][1]},
                         {vn[nIdx[i]-1][0], vn[nIdx[i]-1][1], vn[nIdx[i]-1][2]}
                     };
+
                     DArray_Push_T(Vertex, &mesh->vertices, vert);
                     DArray_Push_T(unsigned int, &mesh->indices, DArray_Size(&mesh->vertices) - 1);
                 }

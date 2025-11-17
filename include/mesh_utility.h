@@ -40,209 +40,195 @@ typedef struct
 
 // ALWAYS SET THE SHAPE BEFORE YOU INITIALIZE
 
-static inline void Mesh_CreateTriangle(Mesh* mesh)
+static inline void Mesh_CreateTriangle(Mesh* mesh, Arena* allocator)
 {
-    mesh->vertices = DArray_Create_T(Vertex, 3, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 3, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
 
-    Vertex v1 = {{-0.5f, -0.5f, 0.0f},   {0.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v2 = {{0.5f, -0.5f, 0.0f},   {1.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v3 = {{0.0f, 0.5f, 0.0f},   {0.5f,1.0f},  {0.0f, 0.0f, 1.0f}};
-    DArray_Push_T(Vertex, &mesh->vertices, v1);
-    DArray_Push_T(Vertex, &mesh->vertices, v2);
-    DArray_Push_T(Vertex, &mesh->vertices, v3);
-
-    mesh->use_indices = false;
-
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-
-    mesh->initialized = true;
-}
-
-static inline void Mesh_CreateRectangle(Mesh* mesh)
-{
-    mesh->vertices = DArray_Create_T(Vertex, 4, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 6, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
-
-    Vertex v0 = {{0.5f,  0.5f, 0.0f},   {1.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v1 = {{0.5f, -0.5f, 0.0f},   {1.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v2 = {{-0.5f, -0.5f, 0.0f},   {0.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v3 = {{-0.5f,  0.5f, 0.0f},   {0.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
-
-    DArray_Push_T(Vertex, &mesh->vertices, v0); DArray_Push_T(Vertex, &mesh->vertices, v1);
-    DArray_Push_T(Vertex, &mesh->vertices, v2); DArray_Push_T(Vertex, &mesh->vertices, v3);
-
-    DArray_Push_T(unsigned int, &mesh->indices, 0); DArray_Push_T(unsigned int, &mesh->indices, 1); DArray_Push_T(unsigned int, &mesh->indices, 3);
-    DArray_Push_T(unsigned int, &mesh->indices, 1); DArray_Push_T(unsigned int, &mesh->indices, 2); DArray_Push_T(unsigned int, &mesh->indices, 3);
-
-    mesh->use_indices = true;
-
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-
-    mesh->initialized = true;
-}
-
-// // TODO
-static inline void Mesh_CreateCircle(Mesh* mesh, float radius, int sectors)
-{
-    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
-
-    // Center vertex
-    Vertex center = { {0.0f, 0.0f, 0.0f}, {0.5f, 0.5f}, {0.0f, 0.0f, 1.0f} };
-    DArray_Push_T(Vertex, &mesh->vertices, center);
-
-    for (int i = 0; i <= sectors; ++i)
-    {
-        float theta = (float)i / (float)sectors * 2.0f * PI;
-        float x = radius * cosf(theta);
-        float y = radius * sinf(theta);
-
-        // position, texcoords, normal
-        Vertex vert = 
-        {
-            {x, y, 0.0f},
-            {0.5f + 0.5f * cosf(theta), 0.5f + 0.5f * sinf(theta)},
-            {0.0f, 0.0f, 1.0f}
-        };
-
-        DArray_Push_T(Vertex, &mesh->vertices, vert);
-    }
-
-    // Indices (triangle fan)
-    for (int i = 1; i <= sectors; ++i)
-    {
-        DArray_Push_T(unsigned int, &mesh->indices, 0);
-        DArray_Push_T(unsigned int, &mesh->indices, i);
-        DArray_Push_T(unsigned int, &mesh->indices, i + 1);
-    }
-
-    mesh->use_indices = true;
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-    mesh->initialized = true;
-}
-
-static inline void Mesh_CreateCube(Mesh* mesh)
-{
-    mesh->vertices = DArray_Create_T(Vertex, 24, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 36, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
-
-    // pos                  // uv       // normal
-    // Front face
-    Vertex v0 = {{-0.5f,-0.5f, 0.5f},      {0.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v1 = {{0.5f,-0.5f, 0.5f},      {1.0f,0.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v2 = {{0.5f, 0.5f, 0.5f},      {1.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
-    Vertex v3 = {{-0.5f, 0.5f, 0.5f},      {0.0f,1.0f},  {0.0f, 0.0f, 1.0f}};
-
-    // Back face
-    Vertex v4 = {{-0.5f,-0.5f,-0.5f},      {1.0f,0.0f},  {0.0f, 0.0f,-1.0f}};
-    Vertex v5 = {{0.5f,-0.5f,-0.5f},      {0.0f,0.0f},  {0.0f, 0.0f,-1.0f}};
-    Vertex v6 = {{0.5f, 0.5f,-0.5f},      {0.0f,1.0f},  {0.0f, 0.0f,-1.0f}};
-    Vertex v7 = {{-0.5f, 0.5f,-0.5f},      {1.0f,1.0f},  {0.0f, 0.0f,-1.0f}};
-
-    // Left face
-    Vertex v8 = {{-0.5f,-0.5f,-0.5f},      {0.0f,0.0f}, {-1.0f, 0.0f, 0.0f}};
-    Vertex v9 = {{-0.5f,-0.5f, 0.5f},      {1.0f,0.0f}, {-1.0f, 0.0f, 0.0f}};
-    Vertex v10 = {{-0.5f, 0.5f, 0.5f},      {1.0f,1.0f}, {-1.0f, 0.0f, 0.0f}};
-    Vertex v11 = {{-0.5f, 0.5f,-0.5f},      {0.0f,1.0f}, {-1.0f, 0.0f, 0.0f}};
-
-    // Right face
-    Vertex v12 = {{0.5f,-0.5f,-0.5f},      {1.0f,0.0f},  {1.0f, 0.0f, 0.0f}};
-    Vertex v13 = {{0.5f,-0.5f, 0.5f},      {0.0f,0.0f},  {1.0f, 0.0f, 0.0f}};
-    Vertex v14 = {{0.5f, 0.5f, 0.5f},      {0.0f,1.0f},  {1.0f, 0.0f, 0.0f}};
-    Vertex v15 = {{0.5f, 0.5f,-0.5f},      {1.0f,1.0f},  {1.0f, 0.0f, 0.0f}};
-
-    // Top face
-    Vertex v16 = {{-0.5f, 0.5f,-0.5f},      {0.0f,0.0f},  {0.0f, 1.0f, 0.0f}};
-    Vertex v17 = {{0.5f, 0.5f,-0.5f},      {1.0f,0.0f},  {0.0f, 1.0f, 0.0f}};
-    Vertex v18 = {{0.5f, 0.5f, 0.5f},      {1.0f,1.0f},  {0.0f, 1.0f, 0.0f}};
-    Vertex v19 = {{-0.5f, 0.5f, 0.5f},      {0.0f,1.0f},  {0.0f, 1.0f, 0.0f}};
-
-    // Bottom face
-    Vertex v20 = {{-0.5f,-0.5f,-0.5f},      {1.0f,1.0f},  {0.0f,-1.0f, 0.0f}};
-    Vertex v21 = {{0.5f,-0.5f,-0.5f},      {0.0f,1.0f},  {0.0f,-1.0f, 0.0f}};
-    Vertex v22 = {{0.5f,-0.5f, 0.5f},      {0.0f,0.0f},  {0.0f,-1.0f, 0.0f}};
-    Vertex v23 = {{-0.5f,-0.5f, 0.5f},      {1.0f,0.0f},  {0.0f,-1.0f, 0.0f}};
-
-    DArray_Push_T(Vertex, &mesh->vertices, v0); DArray_Push_T(Vertex, &mesh->vertices, v1); DArray_Push_T(Vertex, &mesh->vertices, v2);
-    DArray_Push_T(Vertex, &mesh->vertices, v3); DArray_Push_T(Vertex, &mesh->vertices, v4); DArray_Push_T(Vertex, &mesh->vertices, v5);
-    DArray_Push_T(Vertex, &mesh->vertices, v6); DArray_Push_T(Vertex, &mesh->vertices, v7); DArray_Push_T(Vertex, &mesh->vertices, v8);
-    DArray_Push_T(Vertex, &mesh->vertices, v9); DArray_Push_T(Vertex, &mesh->vertices, v10); DArray_Push_T(Vertex, &mesh->vertices, v11);
-    DArray_Push_T(Vertex, &mesh->vertices, v12); DArray_Push_T(Vertex, &mesh->vertices, v13); DArray_Push_T(Vertex, &mesh->vertices, v14);
-    DArray_Push_T(Vertex, &mesh->vertices, v15); DArray_Push_T(Vertex, &mesh->vertices, v16); DArray_Push_T(Vertex, &mesh->vertices, v17);
-    DArray_Push_T(Vertex, &mesh->vertices, v18); DArray_Push_T(Vertex, &mesh->vertices, v19); DArray_Push_T(Vertex, &mesh->vertices, v20);
-    DArray_Push_T(Vertex, &mesh->vertices, v21); DArray_Push_T(Vertex, &mesh->vertices, v22); DArray_Push_T(Vertex, &mesh->vertices, v23);
-
-    unsigned int indices[36] = 
-    {
-        0,1,2, 2,3,0,        // front
-        4,5,6, 6,7,4,        // back
-        8,9,10,10,11,8,      // left
-        12,13,14,14,15,12,   // right
-        16,17,18,18,19,16,   // top
-        20,21,22,22,23,20    // bottom
+    Vertex v[3] = {
+        {{-0.5f, -0.5f, 0.0f}, {0.0f,0.0f}, {0.0f,0.0f,1.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {1.0f,0.0f}, {0.0f,0.0f,1.0f}},
+        {{ 0.0f,  0.5f, 0.0f}, {0.5f,1.0f}, {0.0f,0.0f,1.0f}}
     };
 
-    for (size_t i = 0; i < 36; ++i)
-    {
-        DArray_Push_T(unsigned int, &mesh->indices, indices[i]);
-    }
+    for (int i=0;i<3;i++) DArray_Push_T(Vertex,&mesh->vertices,v[i]);
 
-    mesh->use_indices = true;
-
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-
+    mesh->use_indices = false;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
     mesh->initialized = true;
 }
 
-static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int sectors)
+static inline void Mesh_CreateRectangle(Mesh* mesh, Arena* allocator)
 {
-    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
+    mesh->vertices = DArray_Create_T(Vertex, 4, allocator);
+    mesh->indices = DArray_Create_T(unsigned int, 6, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
 
-    for (int i = 0; i <= stacks; ++i)
+    Vertex v[4] = {
+        {{ 0.5f,  0.5f, 0.0f}, {1.0f,1.0f}, {0.0f,0.0f,1.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {1.0f,0.0f}, {0.0f,0.0f,1.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {0.0f,0.0f}, {0.0f,0.0f,1.0f}},
+        {{-0.5f,  0.5f, 0.0f}, {0.0f,1.0f}, {0.0f,0.0f,1.0f}}
+    };
+    for(int i=0;i<4;i++) DArray_Push_T(Vertex,&mesh->vertices,v[i]);
+
+    unsigned int idx[6] = {0,1,3,1,2,3};
+    for(int i=0;i<6;i++) DArray_Push_T(unsigned int,&mesh->indices,idx[i]);
+
+    mesh->use_indices = true;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
+    mesh->initialized = true;
+}
+
+static inline void Mesh_CreateCircle(Mesh* mesh, float radius, int sectors, Arena* allocator)
+{
+    int vertex_count = sectors + 2; // center + perimeter + duplicate for closure
+    int index_count = sectors * 3;
+
+    mesh->vertices = DArray_Create_T(Vertex, vertex_count, allocator);
+    mesh->indices  = DArray_Create_T(unsigned int, index_count, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
+
+    Vertex center = {{0,0,0},{0.5f,0.5f},{0,0,1}};
+    DArray_Push_T(Vertex,&mesh->vertices,center);
+
+    for(int i=0;i<=sectors;i++)
     {
-        float phi = (float)i / (float)stacks * PI;
-        float y = radius * cosf(phi);
-        float r = radius * sinf(phi);
+        float theta = (float)i/sectors * 2*PI;
+        Vertex v = {{radius*cosf(theta),radius*sinf(theta),0},
+                    {0.5f + 0.5f*cosf(theta),0.5f + 0.5f*sinf(theta)},
+                    {0,0,1}};
+        DArray_Push_T(Vertex,&mesh->vertices,v);
+    }
 
-        for (int j = 0; j <= sectors; ++j)
+    for(int i=1;i<=sectors;i++)
+    {
+        DArray_Push_T(unsigned int,&mesh->indices,0);
+        DArray_Push_T(unsigned int,&mesh->indices,i);
+        DArray_Push_T(unsigned int,&mesh->indices,i+1);
+    }
+
+    mesh->use_indices = true;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
+    mesh->initialized = true;
+}
+
+static inline void Mesh_CreateCube(Mesh* mesh, Arena* allocator)
+{
+    int vertex_count = 24;
+    int index_count  = 36;
+
+    mesh->vertices = DArray_Create_T(Vertex, vertex_count, allocator);
+    mesh->indices  = DArray_Create_T(unsigned int, index_count, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
+
+    Vertex verts[24] = {
+        // front
+        {{-0.5f,-0.5f,0.5f},{0,0},{0,0,1}},{{0.5f,-0.5f,0.5f},{1,0},{0,0,1}},{{0.5f,0.5f,0.5f},{1,1},{0,0,1}},{{-0.5f,0.5f,0.5f},{0,1},{0,0,1}},
+        // back
+        {{-0.5f,-0.5f,-0.5f},{1,0},{0,0,-1}},{{0.5f,-0.5f,-0.5f},{0,0},{0,0,-1}},{{0.5f,0.5f,-0.5f},{0,1},{0,0,-1}},{{-0.5f,0.5f,-0.5f},{1,1},{0,0,-1}},
+        // left
+        {{-0.5f,-0.5f,-0.5f},{0,0},{-1,0,0}},{{-0.5f,-0.5f,0.5f},{1,0},{-1,0,0}},{{-0.5f,0.5f,0.5f},{1,1},{-1,0,0}},{{-0.5f,0.5f,-0.5f},{0,1},{-1,0,0}},
+        // right
+        {{0.5f,-0.5f,-0.5f},{1,0},{1,0,0}},{{0.5f,-0.5f,0.5f},{0,0},{1,0,0}},{{0.5f,0.5f,0.5f},{0,1},{1,0,0}},{{0.5f,0.5f,-0.5f},{1,1},{1,0,0}},
+        // top
+        {{-0.5f,0.5f,-0.5f},{0,0},{0,1,0}},{{0.5f,0.5f,-0.5f},{1,0},{0,1,0}},{{0.5f,0.5f,0.5f},{1,1},{0,1,0}},{{-0.5f,0.5f,0.5f},{0,1},{0,1,0}},
+        // bottom
+        {{-0.5f,-0.5f,-0.5f},{1,1},{0,-1,0}},{{0.5f,-0.5f,-0.5f},{0,1},{0,-1,0}},{{0.5f,-0.5f,0.5f},{0,0},{0,-1,0}},{{-0.5f,-0.5f,0.5f},{1,0},{0,-1,0}}
+    };
+    for(int i=0;i<24;i++) DArray_Push_T(Vertex,&mesh->vertices,verts[i]);
+
+    unsigned int idx[36] = {
+        0,1,2,2,3,0, 4,5,6,6,7,4, 8,9,10,10,11,8, 12,13,14,14,15,12, 16,17,18,18,19,16, 20,21,22,22,23,20
+    };
+    for(int i=0;i<36;i++) DArray_Push_T(unsigned int,&mesh->indices,idx[i]);
+
+    mesh->use_indices = true;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
+    mesh->initialized = true;
+}
+
+static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int sectors, Arena* allocator)
+{
+    int vertex_count = (stacks+1)*(sectors+1);
+    int index_count = stacks*sectors*6;
+
+    mesh->vertices = DArray_Create_T(Vertex, vertex_count, allocator);
+    mesh->indices  = DArray_Create_T(unsigned int, index_count, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
+
+    for(int i=0;i<=stacks;i++)
+    {
+        float phi = (float)i/stacks*PI;
+        float y = radius*cosf(phi);
+        float r = radius*sinf(phi);
+
+        for(int j=0;j<=sectors;j++)
         {
-            float theta = (float)j / (float)sectors * 2.0f * PI;
-            float x = r * cosf(theta);
-            float z = r * sinf(theta);
-
-            float u = (float)j / (float)sectors;
-            float v = 1.0f - (float)i / (float)stacks;
-
-            float nx = x / radius;
-            float ny = y / radius;
-            float nz = z / radius;
-
-            Vertex vert = { {x, y, z}, {u, v}, {nx, ny, nz} };
-            DArray_Push_T(Vertex, &mesh->vertices, vert);
+            float theta = (float)j/sectors*2*PI;
+            float x = r*cosf(theta), z = r*sinf(theta);
+            Vertex v = {{x,y,z},{(float)j/sectors,1.0f-(float)i/stacks},{x/radius,y/radius,z/radius}};
+            DArray_Push_T(Vertex,&mesh->vertices,v);
         }
     }
 
-    for (int i = 0; i < stacks; ++i)
+    for(int i=0;i<stacks;i++)
     {
-        for (int j = 0; j < sectors; ++j)
+        for(int j=0;j<sectors;j++)
+        {
+            int a=i*(sectors+1)+j;
+            int b=a+sectors+1;
+            DArray_Push_T(unsigned int,&mesh->indices,a); DArray_Push_T(unsigned int,&mesh->indices,b); DArray_Push_T(unsigned int,&mesh->indices,a+1);
+            DArray_Push_T(unsigned int,&mesh->indices,a+1); DArray_Push_T(unsigned int,&mesh->indices,b); DArray_Push_T(unsigned int,&mesh->indices,b+1);
+        }
+    }
+
+    mesh->use_indices = true;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
+    mesh->initialized = true;
+}
+
+static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sectors, Arena* allocator)
+{
+    int vertex_count = (stacks + 1) * (sectors + 1);
+    int index_count  = stacks * sectors * 6;
+
+    mesh->vertices = DArray_Create_T(Vertex, vertex_count, allocator);
+    mesh->indices  = DArray_Create_T(unsigned int, index_count, allocator);
+    mesh->textures = DArray_Create_T(Texture, 1, allocator);
+
+    // Generate vertices
+    for (int i = 0; i <= stacks; i++)
+    {
+        float phi = (float)i / stacks * PI; // full sphere
+        float y = radius * cosf(phi);
+        float r = radius * sinf(phi);
+
+        for (int j = 0; j <= sectors; j++)
+        {
+            float theta = (float)j / sectors * 2.0f * PI;
+            float x = r * cosf(theta);
+            float z = r * sinf(theta);
+
+            // Inward normals for skybox
+            Vertex v = {
+                { x, y, z },
+                { 1.0f - (float)j / sectors, (float)i / stacks },
+                { -x / radius, -y / radius, -z / radius } // inward
+            };
+            DArray_Push_T(Vertex, &mesh->vertices, v);
+        }
+    }
+
+    // Generate indices
+    for (int i = 0; i < stacks; i++)
+    {
+        for (int j = 0; j < sectors; j++)
         {
             int a = i * (sectors + 1) + j;
             int b = a + sectors + 1;
 
+            // Clockwise winding for inward-facing triangles
             DArray_Push_T(unsigned int, &mesh->indices, a);
             DArray_Push_T(unsigned int, &mesh->indices, b);
             DArray_Push_T(unsigned int, &mesh->indices, a + 1);
@@ -254,63 +240,7 @@ static inline void Mesh_CreateSphere(Mesh* mesh, float radius, int stacks, int s
     }
 
     mesh->use_indices = true;
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
-    mesh->initialized = true;
-}
-
-static inline void Mesh_CreateDome(Mesh* mesh, float radius, int stacks, int sectors)
-{
-    mesh->vertices = DArray_Create_T(Vertex, 10, NULL);
-    mesh->indices = DArray_Create_T(unsigned int, 10, NULL);
-    mesh->textures = DArray_Create_T(Texture, 1, NULL);
-
-    for (int i = 0; i <= stacks; ++i)
-    {
-        float phi = (float)i / (float)stacks * PI;
-        float y = radius * cosf(phi);
-        float r = radius * sinf(phi);
-
-        for (int j = 0; j <= sectors; ++j)
-        {
-            float theta = (float)j / (float)sectors * 2.0f * PI;
-            float x = r * cosf(theta);
-            float z = r * sinf(theta);
-
-            float u = 1.0f - ((float)j / (float)sectors);
-            float v = (float)i / (float)stacks;
-
-            float nx = -(x / radius);
-            float ny = -(y / radius);
-            float nz = -(z / radius);
-
-            Vertex vert = { {x, y, z}, {u, v}, {nx, ny, nz} };
-            DArray_Push_T(Vertex, &mesh->vertices, vert);
-        }
-    }
-
-    for (int i = 0; i < stacks; ++i)
-    {
-        for (int j = 0; j < sectors; ++j)
-        {
-            int a = i * (sectors + 1) + j;
-            int b = a + sectors + 1;
-
-            DArray_Push_T(unsigned int, &mesh->indices, a);
-            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
-            DArray_Push_T(unsigned int, &mesh->indices, b);
-
-            DArray_Push_T(unsigned int, &mesh->indices, a + 1);
-            DArray_Push_T(unsigned int, &mesh->indices, b + 1);
-            DArray_Push_T(unsigned int, &mesh->indices, b);
-        }
-    }
-
-    mesh->use_indices = true;
-    mesh->VAO = 0;
-    mesh->VBO = 0;
-    mesh->EBO = 0;
+    mesh->VAO = mesh->VBO = mesh->EBO = 0;
     mesh->initialized = true;
 }
 
