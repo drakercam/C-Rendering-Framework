@@ -106,10 +106,10 @@ static inline Matrix4 Camera3D_ViewMatrix(const Camera3D* camera)
 
     // Transpose rotation (invert rotation)
     Matrix4 rotationInv = {
-        rotationMat.m[0], rotationMat.m[4], rotationMat.m[8], 0.0f,
-        rotationMat.m[1], rotationMat.m[5], rotationMat.m[9], 0.0f,
-        rotationMat.m[2], rotationMat.m[6], rotationMat.m[10], 0.0f,
-        0.0f,                0.0f,                0.0f,               1.0f
+       {rotationMat.m[0], rotationMat.m[4], rotationMat.m[8],         0.0f,
+        rotationMat.m[1], rotationMat.m[5], rotationMat.m[9],         0.0f,
+        rotationMat.m[2], rotationMat.m[6], rotationMat.m[10],        0.0f,
+        0.0f,                0.0f,                0.0f,               1.0f}
     };
 
     // Translation by negative camera position

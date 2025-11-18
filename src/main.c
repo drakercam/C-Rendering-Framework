@@ -5,7 +5,8 @@
 int main(void)
 {
     Window window;
-    if (!Window_Create(&window, 1280, 720, 60.0f, "C_Framework")) return -1;
+    if (!Window_Create(&window, 1280, 720, 60.0f, "C_Framework")) 
+        return -1;
 
     Window_DisableDepthTest();
 
@@ -16,9 +17,7 @@ int main(void)
     // Lets create an arena to handle the mesh data
     Arena arena = Arena_Create(4096*4096); // 4MB
 
-    // Window size
-    Vector2 window_size = Window_GetWindowSize(&window);
-
+    // Create the rectangle
     Mesh rectangle;
     Mesh_CreateRectangle(&rectangle, &arena);
     Mesh_Upload(&rectangle);

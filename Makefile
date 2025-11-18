@@ -3,7 +3,7 @@ CC      = gcc
 CXX     = g++
 
 # Common flags
-CFLAGS  = -g -O0 -Wall -Iinclude
+CFLAGS  = -g -std=c99 -O0 -Wall -Iinclude
 CXXFLAGS= -g -O0 -Wall -Iinclude
 
 # Libraries

@@ -142,10 +142,10 @@ typedef struct
 
 static inline Matrix3 Math_Mat3Identity()
 {
-    return (Matrix3){
-        1,0,0,
+    return (Matrix3) {
+       {1,0,0,
         0,1,0,
-        0,0,1
+        0,0,1}
     };
 }
 
@@ -184,9 +184,9 @@ static inline Matrix3 Math_Mat3Rotate(float theta, const Vector3 axis)
     float ic = 1.0f - c;
 
     return (Matrix3){
-        c + n.x*n.x*ic,      n.x*n.y*ic - n.z*s,  n.x*n.z*ic + n.y*s,
+       {c + n.x*n.x*ic,      n.x*n.y*ic - n.z*s,  n.x*n.z*ic + n.y*s,
         n.y*n.x*ic + n.z*s,  c + n.y*n.y*ic,      n.y*n.z*ic - n.x*s,
-        n.z*n.x*ic - n.y*s,  n.z*n.y*ic + n.x*s,  c + n.z*n.z*ic
+        n.z*n.x*ic - n.y*s,  n.z*n.y*ic + n.x*s,  c + n.z*n.z*ic}
     };
 }
 
@@ -199,30 +199,30 @@ typedef struct
 static inline Matrix4 Math_Mat4Identity() 
 { 
     return (Matrix4){
-        1,0,0,0,    // column 1
+       {1,0,0,0,    // column 1
         0,1,0,0,    // column 2
         0,0,1,0,    // column 3
-        0,0,0,1     // column 4
+        0,0,0,1}    // column 4
     }; 
 }
 
 static inline Matrix4 Math_Mat4Translate(const Vector3 t)
 {
     return (Matrix4){
-        1,0,0,0,
+       {1,0,0,0,
         0,1,0,0,
         0,0,1,0,
-        t.x,t.y,t.z,1
+        t.x,t.y,t.z,1}
     };
 }
 
 static inline Matrix4 Math_Mat4Scale(const Vector3 s)
 {
     return (Matrix4){
-        s.x,0,0,0,
+       {s.x,0,0,0,
         0,s.y,0,0,
         0,0,s.z,0,
-        0,0,0,1
+        0,0,0,1}
     };
 }
 static inline Matrix4 Math_Mat4Rotate(float theta, const Vector3 axis)
@@ -234,10 +234,10 @@ static inline Matrix4 Math_Mat4Rotate(float theta, const Vector3 axis)
     float ic = (1-c);
 
     return (Matrix4){
-        c+(nA.x*nA.x)*ic,      nA.y*nA.x*ic+nA.z*s,    nA.z*nA.x*ic-nA.y*s,    0,  // Col 1
+       {c+(nA.x*nA.x)*ic,      nA.y*nA.x*ic+nA.z*s,    nA.z*nA.x*ic-nA.y*s,    0,  // Col 1
         nA.x*nA.y*ic-nA.z*s,   c+(nA.y*nA.y)*ic,       nA.y*nA.z*ic+nA.x*s,    0,  // Col 2
         nA.x*nA.z*ic+nA.y*s,   nA.y*nA.z*ic-nA.x*s,    c+(nA.z*nA.z)*ic,       0,  // Col 3
-        0,                     0,                      0,                      1   // Col 4
+        0,                     0,                      0,                      1}  // Col 4
     };
 }
 
@@ -248,10 +248,10 @@ static inline Matrix4 Math_Mat4RotateX(float theta)
     float s = sinf(theta);
 
     return (Matrix4){
-        1, 0, 0, 0,
+       {1, 0, 0, 0,
         0, c, -s, 0,
         0, s, c, 0,
-        0, 0, 0, 1
+        0, 0, 0, 1}
     };
 }
 
@@ -262,10 +262,10 @@ static inline Matrix4 Math_Mat4RotateY(float theta)
     float s = sinf(theta);
 
     return (Matrix4){
-        c, 0, s, 0,
+       {c, 0, s, 0,
         0, 1, 0, 0,
         -s, 0, c, 0,
-        0, 0, 0, 1
+        0, 0, 0, 1}
     };
 }
 
@@ -276,10 +276,10 @@ static inline Matrix4 Math_Mat4RotateZ(float theta)
     float s = sinf(theta);
 
     return (Matrix4){
-        c, -s, 0, 0,
+       {c, -s, 0, 0,
         s, c, 0, 0,
         0, 0, 1, 0,
-        0, 0, 0, 1
+        0, 0, 0, 1}
     };
 }
 static inline Matrix4 Math_Mat4Multiply(const Matrix4 m1, const Matrix4 m2)
@@ -389,10 +389,10 @@ static inline Matrix4 Math_QuatConvertToMat4(const Quaternion q)
     float zz = q.z*q.z;
 
     return (Matrix4){
-        (1-2*(yy) - 2*(zz)), (2*q.x*q.y + 2*q.w*q.z), (2*q.x*q.z - 2*q.w*q.y),   0,
+       {(1-2*(yy) - 2*(zz)), (2*q.x*q.y + 2*q.w*q.z), (2*q.x*q.z - 2*q.w*q.y),   0,
         (2*q.x*q.y - 2*q.w*q.z), (1 - 2*(xx) - 2*(zz)), (2*q.y*q.z + 2*q.w*q.x), 0,
         (2*q.x*q.z + 2*q.w*q.y), (2*q.y*q.z - 2*q.w*q.x), (1 - 2*(xx) - 2*(yy)), 0,
-        0,                            0,                               0,                1
+        0,                         0,                        0,                  1}
     };  
 }
 
@@ -403,9 +403,9 @@ static inline Matrix3 Math_QuatConvertToMat3(const Quaternion q)
     float zz = q.z*q.z;
 
     return (Matrix3) {
-        (1-2*(yy) - 2*(zz)), (2*q.x*q.y + 2*q.w*q.z), (2*q.x*q.z - 2*q.w*q.y),
+       {(1-2*(yy) - 2*(zz)), (2*q.x*q.y + 2*q.w*q.z), (2*q.x*q.z - 2*q.w*q.y),
         (2*q.x*q.y - 2*q.w*q.z), (1 - 2*(xx) - 2*(zz)), (2*q.y*q.z + 2*q.w*q.x),
-        (2*q.x*q.z + 2*q.w*q.y), (2*q.y*q.z - 2*q.w*q.x), (1 - 2*(xx) - 2*(yy))
+        (2*q.x*q.z + 2*q.w*q.y), (2*q.y*q.z - 2*q.w*q.x), (1 - 2*(xx) - 2*(yy))}
     };
 }
 

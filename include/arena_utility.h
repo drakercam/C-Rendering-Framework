@@ -3,7 +3,6 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdalign.h>
 #include <stdint.h>
 
 typedef struct
@@ -14,8 +13,16 @@ typedef struct
     
 } Arena;
 
-#define ALIGN(val, al) (((val) + (al) - 1) / (al)) * (al)
-static inline size_t alignment = alignof(max_align_t);
+typedef union 
+{
+    long long ll;
+    long double ld;
+    void* p;
+
+} max_align_t_c99;
+
+#define ALIGN_UP(x, a)  (((x) + ((a) - 1)) & ~((a) - 1))
+static const size_t alignment = sizeof(max_align_t_c99);
 
 static inline Arena Arena_Create(size_t capacity)
 {   
@@ -24,7 +31,7 @@ static inline Arena Arena_Create(size_t capacity)
     Arena a;
     a.start = initial;
     a.current = initial;
-    a.end = (char*)initial + capacity;  // ✅ cast to char* for pointer arithmetic
+    a.end = (char*)initial + capacity;
 
     return a;
 }
@@ -36,15 +43,15 @@ static inline void Arena_Reset(Arena* a)
 
 static inline void* Arena_Alloc(Arena* a, size_t size)
 {
-    if (!a)
-        return NULL;
+    if (!a) return NULL;
 
-    size_t aligned_size = ALIGN(size, alignment);
-    if ((char*)a->current + aligned_size >= (char*)a->end)  // ✅ cast for arithmetic
+    size_t aligned_size = ALIGN_UP(size, alignment);
+
+    if ((char*)a->current + aligned_size >= (char*)a->end)
         return NULL;
 
     void* p = a->current;
-    a->current = (char*)a->current + aligned_size;  // ✅ cast for arithmetic
+    a->current = (char*)a->current + aligned_size;
 
     return p;
 }
