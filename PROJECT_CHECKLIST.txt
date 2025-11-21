@@ -1,0 +1,39 @@
+# This checklist serves as goals I wish to complete with regards to my framework
+
+1. Spritesheets / sprite animations (2D)
+
+2. Physics utility (2D first)
+
+3. Collision utility (sphere-to-sphere, AABB)
+
+4. Mouse interaction (clicking on objects, buttons)
+
+5. Camera improvements & mouse movement
+
+6. Text rendering / UI basics
+
+7. 2D bouncing ball simulation (test physics + collisions + input)
+
+8. Make 2D game using the library
+
+9. Texture atlas support for 3D models / tinyobj loader
+
+10. 3D model animations
+
+11. Make 3D game using the library
+
+12. Compile framework into .so / .dll
+
+13. Upload games to GitHub
+
+14. Publish games on itch.io
+
+# Project Phases:
+
+Phase 1 – Core Utilities: Arena allocator, math, transforms, mesh/texture/shader helpers, input wrappers.
+
+Phase 2 – Optional High-Level Utilities: Sprite sheets, 2D animations, text rendering, collision/physics helpers.
+
+Phase 3 – Demonstration Projects: Small 2D and 3D demos to show the framework in action.
+
+Phase 4 – Distribution: Compile library, document API, GitHub release, optional itch.io demos.

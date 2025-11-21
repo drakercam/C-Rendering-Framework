@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "master.h"
+#include "framework_master.h"
 
 int main(void)
 {
@@ -79,6 +79,7 @@ int main(void)
 
     Texture_Delete(&georgia_texture);
 
+    // Free up the memory for the meshes being contained in the arena
     Arena_Free(&arena);
 
     Window_Delete();

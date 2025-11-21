@@ -1,9 +1,8 @@
-#ifndef MASTER_H
-#define MASTER_H
+#ifndef FRAMEWORK_MASTER_H
+#define FRAMEWORK_MASTER_H
 
 // Utility files
 #include <stdbool.h>
-
 #include "window_utility.h"
 #include "file_utility.h"
 #include "math_utility.h"
